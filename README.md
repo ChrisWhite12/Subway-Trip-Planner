@@ -36,7 +36,13 @@ img
 
 # Status Updates
 ## Update 1
+    I have had trouble in figuring out how to implement the Trains in the program. My idea is to have the Trains be a child of each of the lines that they are assigned to. Just figuring out how to calculate the timetables for each train. I think that I can write a function in the Train object and access the varibles from the Line object
 
+    having trouble with searching for stations in all_stations hash
+    have a function called search_station
+    passes in key values 
+    the error comes up with undefined local varible or method all_stations
+    can access the all_stations varible by print key values
 ## Update 2
 
 
