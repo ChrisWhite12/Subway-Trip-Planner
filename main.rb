@@ -17,6 +17,11 @@ require "faker"
 require_relative "./classes/Line.rb"
 require_relative "./classes/Train.rb"
 
+def intersect_lines(line1,line2,stat1,stat2)
+    line1.stations[stat1] = line2.stations[stat2]
+    print "#{line2.stations[stat2]}\n"
+end
+
 station1 = []
 station2 = []
 station3 = []
@@ -40,7 +45,42 @@ Northern = Line.new("Northern", station2, [2,3,5,1], "NS")
 Express = Line.new("Express", station3, [5,6], "NS")
 Victoria = Line.new("Victoria", station4, [2,2,2], "EW")
 
+intersect_lines(District,Northern,1,2)
+intersect_lines(Express,Victoria,0,1)
+
 District.print_line()
 Northern.print_line()
 Express.print_line()
 Victoria.print_line()
+
+
+
+# Train1 = Train.new()
+
+quit = false
+
+while !quit
+    choice = 0
+    print "Welcome to the Subway Travel App\n"
+    print "----------------------------------\n"
+    print "Select option: \n"
+    print "1 - Search for trip \n"
+    print "2 - Look at map\n"
+    print "3 - Look at timetable\n"
+    print "4 - Quit\n"
+    print "----------------------------------\n"
+
+    choice = gets.chomp.to_i
+
+    #validate input
+    if(choice == 1)
+        print "search for trip\n"
+    elsif(choice == 2)
+        print "look at map\n"
+    elsif(choice == 3)
+        print "timetable\n"
+    elsif(choice == 4)
+        print "quiting\n"
+        quit = true
+    end
+end

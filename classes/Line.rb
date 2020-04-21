@@ -1,8 +1,10 @@
 require "colorize"
 class Line
+    attr_reader :line_name, :stations, :distance, :direction
+    @@train_arr = []
 
-    def initialize(name, stations, distance, direction)
-        @name = name
+    def initialize(line_name, stations, distance, direction)
+        @line_name = line_name
         @stations = stations
         @distance = distance
         @direction = direction
@@ -20,6 +22,18 @@ class Line
             end
             ind += 1
         }
-        print "    <- #{@name}\n"
+        print "    <- #{@line_name}\n"
+        print "#{stations}\n"
+    end
+
+    def add_train
+        train_direction = ''
+        if(@direction == "NS")
+            train_direction = 'S'
+        elsif(@direction == "EW")
+            train_direction = 'E'
+        end
+
+        @@Train_arr.push(Train.new(@stations[0], train_direction))
     end
 end
