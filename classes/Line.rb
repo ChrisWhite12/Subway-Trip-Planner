@@ -4,16 +4,20 @@ class Line
     @@train_arr = []
 
     def initialize(line_name, stations, distance, direction)
-        @line_name = line_name
-        @stations = stations
-        @distance = distance
-        @direction = direction
+        @line_name = line_name              #string
+        @stations = stations                #array of station objects
+        @distance = distance                #array of distances between each station
+        @direction = direction              #direction NS or EW
     end
 
     def print_line
         ind = 0
         @stations.each{|stat|
-            print "O"           #print o if station
+            if(stat.isInterchange == false)
+                print "O"           #print o if station
+            elsif(stat.isInterchange == true)
+                print "\u25a0".encode('utf-8')
+            end
 
             if(ind < (@distance.length))
                 @distance[ind].times do         #check if NaN
@@ -22,8 +26,11 @@ class Line
             end
             ind += 1
         }
-        print "    <- #{@line_name}\n"
-        print "#{stations}\n"
+        print "    <- #{@line_name} -- #{@direction}\n"
+        @stations.each{|stat|
+        print "#{stat.station_name} - "
+        }
+        print "\n"
     end
 
     def add_train

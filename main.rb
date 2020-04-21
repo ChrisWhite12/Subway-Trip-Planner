@@ -16,28 +16,32 @@
 require "faker"
 require_relative "./classes/Line.rb"
 require_relative "./classes/Train.rb"
+require_relative "./classes/Station.rb"
 
 def intersect_lines(line1,line2,stat1,stat2)
     line1.stations[stat1] = line2.stations[stat2]
-    print "#{line2.stations[stat2]}\n"
+    line1.stations[stat1].isInterchange = true
+    line2.stations[stat2].isInterchange = true
+    print "intersection --- #{line2.stations[stat2].station_name}\n"
+    print "\n"
 end
 
-station1 = []
+station1 = []       #array of station objects
 station2 = []
 station3 = []
 station4 = []
 
 6.times do
-    station1.push(Faker::Address.city)
+    station1.push(Station.new(Faker::Address.city))
 end
 5.times do
-    station2.push(Faker::Address.city)
+    station2.push(Station.new(Faker::Address.city))
 end
 3.times do
-    station3.push(Faker::Address.city)
+    station3.push(Station.new(Faker::Address.city))
 end
 4.times do
-    station4.push(Faker::Address.city)
+    station4.push(Station.new(Faker::Address.city))
 end
 
 District = Line.new("District", station1, [2,3,3,1,1], "EW")
@@ -47,12 +51,13 @@ Victoria = Line.new("Victoria", station4, [2,2,2], "EW")
 
 intersect_lines(District,Northern,1,2)
 intersect_lines(Express,Victoria,0,1)
+intersect_lines(District,Express,4,2)
 
 District.print_line()
 Northern.print_line()
 Express.print_line()
 Victoria.print_line()
-
+print "\n"
 
 
 # Train1 = Train.new()
