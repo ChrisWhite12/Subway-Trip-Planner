@@ -18,28 +18,31 @@ require_relative "./classes/Line.rb"
 require_relative "./classes/Train.rb"
 require_relative "./classes/Station.rb"
 
-all_stations = {}
 all_lines = []
 
 def search_station(data,search1,search2)
     data.each{|line|
         line.stations.each{|station|
             if (station.station_name == search1)
-                print "Origin - #{station.station_name} - #{station.line_name} - interchange #{station.isInterchange} \n"
+                print "Origin - #{station.station_name} - #{line.line_name} Line - interchange #{station.isInterchange} \n"
             elsif(station.station_name == search2)
-                print "Destination - #{station.station_name} - #{station.line_name} - interchange #{station.isInterchange} \n"
+                print "Destination - #{station.station_name} - #{line.line_name} Line - interchange #{station.isInterchange} #{station.color}\n"
             end
         }
     }
-    #search for origin
 
-    #search for destination 
+    #search for origin and destination 
 
         #share the same line?
+        #trip = [origin,destination]
+    #start at origin
+    #look at the intersection(s)
+        #share the same line as destination?
+        #Yes
+        #trip = [origin, intersection, destination]
+        #No
 
-    #search for intersections
-
-        #share the same lines?
+    #
 end
 
 def intersect_lines(line1,line2,stat1,stat2)
@@ -47,6 +50,9 @@ def intersect_lines(line1,line2,stat1,stat2)
     line1.stations[stat1].isInterchange = true
     line2.stations[stat2].isInterchange = true
     print "intersection --- #{line2.stations[stat2].station_name}\n"
+    
+    #remove stations that become intersections
+
 end
 
 def generate_stations(num)
@@ -75,27 +81,12 @@ Express.print_line()
 Victoria.print_line()
 print "\n"
 
-num = 0
-line_num = 0
-all_lines.each{|item|
-    line_num += 1
-    item.stations.each{|item2|
-        all_stations[line_num*100 + num] = item2.station_name
-        num += 1
-    }
-    num = 0
-}
-
-print "all stations - #{all_stations}\n"
-
-# puts all_stations[100]
-# puts all_stations[103]
-# search_station(100,103)
+print "S.all stations - #{Station.all_stations}\n"
 
 quit = false
 
 while !quit
-    choice = 0
+    menu_choice = -1
     print "\n"
     print "Welcome to the Subway Travel App\n"
     print "----------------------------------\n"
@@ -105,25 +96,43 @@ while !quit
     print "3 - Look at timetable\n"
     print "4 - Quit\n"
     print "----------------------------------\n"
+    begin
+    menu_choice = gets.chomp.to_i
 
-    choice = gets.chomp.to_i
+    #if NaN generate error
+    raise TypeError, "NaN" if(menu_choice == 0)
+
+    rescue TypeError
+        print "TypeError - Select menu number\n"
+    end
 
     #validate input
-    if(choice == 1)
-        print "search for trip\n"
+    if(menu_choice == 1)
+        begin
+
         print "Origin? "
         origin_choice = gets.chomp.to_i
+
+        raise TypeError, "NaN" if(origin_choice == 0)
+
         print "Destination? "
         destination_choice = gets.chomp.to_i
-        
-        search_station(all_lines,all_stations[origin_choice],all_stations[destination_choice])
 
-    elsif(choice == 2)
+        raise TypeError, "NaN" if(destination_choice == 0)
+        
+        #if NaN generate error
+        rescue TypeError
+            print "TypeError - Enter the station number\n"
+        end
+        search_station(all_lines,Station.all_stations[origin_choice],Station.all_stations[destination_choice])
+
+    elsif(menu_choice == 2)
         print "look at map\n"
-    elsif(choice == 3)
+    elsif(menu_choice == 3)
         print "timetable\n"
-    elsif(choice == 4)
+    elsif(menu_choice == 4)
         print "quiting\n"
         quit = true
     end
+    #make menu a case statement
 end
