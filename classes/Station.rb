@@ -1,10 +1,11 @@
 class Station
-    attr_reader :station_name, :line_name
+    attr_reader :station_name
     attr_accessor :isInterchange, :zone
 
     #make all_stations a class varible
     @@all_stations = {}
     @@station_num = 100
+    @@all_interchange = {}
     #remove stations that become intersections
 
     def initialize (station_name, line_name, zone = 1, isInterchange = false)
@@ -18,5 +19,14 @@ class Station
 
     def self.all_stations
         @@all_stations
+    end
+
+    def self.all_interchange
+        @@all_interchange
+    end
+
+    def make_interchange(line1,line2)
+        @isInterchange = true
+        @@all_interchange[@station_name] = [line1,line2]
     end
 end

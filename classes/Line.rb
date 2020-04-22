@@ -36,15 +36,4 @@ class Line
         }
         print "\n"
     end
-
-    def add_train
-        train_direction = ''
-        if(@direction == "NS")
-            train_direction = 'S'
-        elsif(@direction == "EW")
-            train_direction = 'E'
-        end
-
-        @@Train_arr.push(Train.new(@stations[0], train_direction))
-    end
 end

@@ -20,10 +20,33 @@ require_relative "./classes/Station.rb"
 
 all_lines = []
 
+# def find_path(line1,line2)
+#     path_arr = []
+#     # inter_arr = []
+
+#     Station.all_interchange.each{ |k,v|
+#         if(v.include?(line1))
+#             path_arr.push(v)
+#             # inter_arr.push(k)
+#         end
+#         path_arr.each{|item|
+#         if(item[1] == line2)
+            
+#         end
+#         }
+#     }
+
+#     #(a,d)
+#     #(a,b),(a,c)
+#     #(a,c,d)
+#     print "path - #{path_arr}"
+# end
+
 def search_station(data,search1,search2)
     origin = []
     destination = []
     trip = []
+    done_searching = false
 
     data.each{|line|
         line.stations.each{|station|
@@ -36,7 +59,7 @@ def search_station(data,search1,search2)
             end
         }
     }
-
+    while !done_searching
     #search for origin and destination 
         origin.each{|item1|
             destination.each{|item2|
@@ -44,19 +67,32 @@ def search_station(data,search1,search2)
                     print "on same line \n"
                     trip = [item1, item2]
                     print "Trip is #{trip[0][0]} on #{trip[0][1]} Line -> #{trip[1][0]} on #{trip[1][1]} Line\n"
+                    done_searching = true
                 end
             }
         }
         #share the same line?
         #trip = [origin,destination]
+        # find_path("District","Northern")
 
-    #start at origin
-    #look at the intersection(s)
-        #share the same line as destination?
-        #Yes
+        if (!done_searching)
+            #look at all interchange
+            Station.all_interchange.each{ |k,v|
+                if(v.include?(origin[0][1]))
+                    if(v.include?(destination[0][1]))
+                        #if there is one interchange
+                        trip = [origin[0][0], k, destination[0][0]]
+                        print "Trip is #{trip}\n"
+                        done_searching = true
+                    end
+                end
+                # if (origin[1] == v && destination[1])
+            }
+        end
+
         #trip = [origin, intersection, destination]
-        #No
 
+    end
     #
 end
 
@@ -65,15 +101,15 @@ def intersect_lines(line1,line2,stat1,stat2)
     # remove stations that become intersections
     Station.all_stations.each{ |k,v|
     if (v == line1.stations[stat1].station_name)
-        print "#{k} #{v} - deleted\n"
+        # print "#{k} #{v} - deleted\n"
         Station.all_stations.delete(k)
     end
     } 
 
     #replace stat1 with stat2
     line1.stations[stat1] = line2.stations[stat2]
-    line1.stations[stat1].isInterchange = true
-    line2.stations[stat2].isInterchange = true
+    line1.stations[stat1].make_interchange(line1.line_name,line2.line_name)
+    line2.stations[stat2].make_interchange(line1.line_name,line2.line_name)
     print "intersection --- #{line2.stations[stat2].station_name}\n"
     
     
@@ -88,26 +124,38 @@ def generate_stations(num,line)
     return station_arr
 end
 
+def show_map
+    print "\n"
+    
+    District.print_line()
+    Northern.print_line()
+    Express.print_line()
+    # Victoria.print_line()
+
+    print "\n"
+
+    print "All stations - #{Station.all_stations}\n"
+    print "All interchanges - #{Station.all_interchange}\n"
+end
+
 
 District = Line.new("District", generate_stations(6,"District"), [2,3,3,1,1], "EW","light_red")
 Northern = Line.new("Northern", generate_stations(5,"Northern"), [2,3,5,1], "NS","light_white")
 Express = Line.new("Express", generate_stations(3,"Express"), [5,6], "NS","light_blue")
-Victoria = Line.new("Victoria", generate_stations(4,"Victoria"), [2,2,2], "EW","light_yellow")
+# Victoria = Line.new("Victoria", generate_stations(4,"Victoria"), [2,2,2], "EW","light_yellow")
 #---restructure ->  create Station objects
-all_lines = [District,Northern,Express,Victoria]
+all_lines = [District,Northern,Express]
 
 intersect_lines(District,Northern,1,2)
-intersect_lines(Express,Victoria,0,1)
+# intersect_lines(Express,Victoria,0,1)
 intersect_lines(District,Express,4,2)
 
-District.print_line()
-Northern.print_line()
-Express.print_line()
-Victoria.print_line()
-print "\n"
+#create trains
+#train.new(start_point, train_direction)
 
-print "All stations - #{Station.all_stations}\n"
+train1 = Train.new(District.stations[1].station_name, 'E')
 
+show_map()
 quit = false
 
 while !quit
@@ -153,11 +201,7 @@ while !quit
 
     elsif(menu_choice == 2)
         print "look at map\n"
-        District.print_line()
-        Northern.print_line()
-        Express.print_line()
-        Victoria.print_line()
-        print "All stations - #{Station.all_stations}\n"
+        show_map()
         
     elsif(menu_choice == 3)
         print "timetable\n"
