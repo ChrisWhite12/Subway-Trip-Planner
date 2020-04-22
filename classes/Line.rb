@@ -1,14 +1,13 @@
 require "colorize"
 
 class Line
-    attr_reader :stations, :distance, :direction, :color
+    attr_reader :stations, :distances, :direction, :color
     attr_accessor :line_name
-    # @@train_arr = []
 
-    def initialize (line_name, stations, distance, direction, color)
+    def initialize (line_name, stations, distances, direction, color)
         @line_name = line_name              #string
         @stations = stations                #array of station objects
-        @distance = distance                #array of distances between each station
+        @distances = distances                #array of distances between each station
         @direction = direction              #direction NS or EW
         @color = color                      #string
     end
@@ -23,8 +22,8 @@ class Line
                 print "\u25a0".encode('utf-8')
             end
 
-            if(ind < (@distance.length))
-                @distance[ind].times do         #check if NaN
+            if(ind < (@distances.length))
+                @distances[ind].times do         #check if NaN
                     print "\u257c".encode('utf-8').colorize(@color.to_sym)       #print - if space
                 end
             end
@@ -35,5 +34,13 @@ class Line
         print "#{stat.station_name} - "
         }
         print "\n"
+    end
+
+    def stations_names
+        stat_arr = []
+        @stations.each{|item|
+            stat_arr.push(item.station_name)
+        }
+        return stat_arr
     end
 end

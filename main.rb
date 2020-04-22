@@ -153,7 +153,15 @@ intersect_lines(District,Express,4,2)
 #create trains
 #train.new(start_point, train_direction)
 
-train1 = Train.new(District.stations[1].station_name, 'E')
+train1 = Train.new(1, 'E',District)
+# puts train1.cal_time()
+
+train2 = Train.new(3, 'W',District)
+
+train3 = Train.new(2, 'N',Northern)
+train4 = Train.new(4, 'S',Northern)
+
+train5 = Train.new(2, 'N',Express)
 
 show_map()
 quit = false
@@ -180,7 +188,8 @@ while !quit
     end
 
     #validate input
-    if(menu_choice == 1)
+    case menu_choice
+    when 1
         begin
 
         print "Origin? "
@@ -199,15 +208,16 @@ while !quit
         end
         search_station(all_lines,Station.all_stations[origin_choice],Station.all_stations[destination_choice])
 
-    elsif(menu_choice == 2)
+    when 2
         print "look at map\n"
         show_map()
         
-    elsif(menu_choice == 3)
+    when 3
         print "timetable\n"
-    elsif(menu_choice == 4)
+    when 4
         print "quiting\n"
         quit = true
+    else
+        print "Not a menu item \n"
     end
-    #make menu a case statement
 end
