@@ -5,7 +5,7 @@ class Line
     attr_accessor :line_name
     # @@train_arr = []
 
-    def initialize (line_name, stations, distance, direction,color)
+    def initialize (line_name, stations, distance, direction, color)
         @line_name = line_name              #string
         @stations = stations                #array of station objects
         @distance = distance                #array of distances between each station

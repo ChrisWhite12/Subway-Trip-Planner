@@ -21,20 +21,35 @@ require_relative "./classes/Station.rb"
 all_lines = []
 
 def search_station(data,search1,search2)
+    origin = []
+    destination = []
+    trip = []
+
     data.each{|line|
         line.stations.each{|station|
             if (station.station_name == search1)
                 print "Origin - #{station.station_name} - #{line.line_name} Line - interchange #{station.isInterchange} \n"
+                origin.push([station.station_name,line.line_name])
             elsif(station.station_name == search2)
-                print "Destination - #{station.station_name} - #{line.line_name} Line - interchange #{station.isInterchange} #{station.color}\n"
+                print "Destination - #{station.station_name} - #{line.line_name} Line - interchange #{station.isInterchange} \n"
+                destination.push([station.station_name,line.line_name])
             end
         }
     }
 
     #search for origin and destination 
-
+        origin.each{|item1|
+            destination.each{|item2|
+                if(item1[1] == item2[1])     #if share the same line
+                    print "on same line \n"
+                    trip = [item1, item2]
+                    print "Trip is #{trip[0][0]} on #{trip[0][1]} Line -> #{trip[1][0]} on #{trip[1][1]} Line\n"
+                end
+            }
+        }
         #share the same line?
         #trip = [origin,destination]
+
     #start at origin
     #look at the intersection(s)
         #share the same line as destination?
@@ -46,29 +61,39 @@ def search_station(data,search1,search2)
 end
 
 def intersect_lines(line1,line2,stat1,stat2)
+
+    # remove stations that become intersections
+    Station.all_stations.each{ |k,v|
+    if (v == line1.stations[stat1].station_name)
+        print "#{k} #{v} - deleted\n"
+        Station.all_stations.delete(k)
+    end
+    } 
+
+    #replace stat1 with stat2
     line1.stations[stat1] = line2.stations[stat2]
     line1.stations[stat1].isInterchange = true
     line2.stations[stat2].isInterchange = true
     print "intersection --- #{line2.stations[stat2].station_name}\n"
     
-    #remove stations that become intersections
-
+    
+    
 end
 
-def generate_stations(num)
+def generate_stations(num,line)
     station_arr = []
     num.times do
-        station_arr.push(Station.new(Faker::Address.city))
+        station_arr.push(Station.new(Faker::Address.city,line))
     end
     return station_arr
 end
 
 
-District = Line.new("District", generate_stations(6), [2,3,3,1,1], "EW","light_red")
-Northern = Line.new("Northern", generate_stations(5), [2,3,5,1], "NS","light_white")
-Express = Line.new("Express", generate_stations(3), [5,6], "NS","light_blue")
-Victoria = Line.new("Victoria", generate_stations(4), [2,2,2], "EW","light_yellow")
-
+District = Line.new("District", generate_stations(6,"District"), [2,3,3,1,1], "EW","light_red")
+Northern = Line.new("Northern", generate_stations(5,"Northern"), [2,3,5,1], "NS","light_white")
+Express = Line.new("Express", generate_stations(3,"Express"), [5,6], "NS","light_blue")
+Victoria = Line.new("Victoria", generate_stations(4,"Victoria"), [2,2,2], "EW","light_yellow")
+#---restructure ->  create Station objects
 all_lines = [District,Northern,Express,Victoria]
 
 intersect_lines(District,Northern,1,2)
@@ -81,7 +106,7 @@ Express.print_line()
 Victoria.print_line()
 print "\n"
 
-print "S.all stations - #{Station.all_stations}\n"
+print "All stations - #{Station.all_stations}\n"
 
 quit = false
 
@@ -128,6 +153,12 @@ while !quit
 
     elsif(menu_choice == 2)
         print "look at map\n"
+        District.print_line()
+        Northern.print_line()
+        Express.print_line()
+        Victoria.print_line()
+        print "All stations - #{Station.all_stations}\n"
+        
     elsif(menu_choice == 3)
         print "timetable\n"
     elsif(menu_choice == 4)
