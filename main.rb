@@ -154,14 +154,24 @@ intersect_lines(District,Express,4,2)
 #train.new(start_point, train_direction)
 
 train1 = Train.new(1, 'E',District)
-# puts train1.cal_time()
+train1.cal_time()
+puts train1.timetable
 
 train2 = Train.new(3, 'W',District)
+train2.cal_time()
+puts train2.timetable
 
 train3 = Train.new(2, 'N',Northern)
-train4 = Train.new(4, 'S',Northern)
+train3.cal_time()
+puts train3.timetable
 
-train5 = Train.new(2, 'N',Express)
+train4 = Train.new(4, 'N',Northern)
+train4.cal_time()
+puts train4.timetable
+
+train5 = Train.new(2, 'N',Express)      #if put South error
+train5.cal_time()
+puts train5.timetable
 
 show_map()
 quit = false

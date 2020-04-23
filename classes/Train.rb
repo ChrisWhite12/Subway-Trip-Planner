@@ -5,7 +5,7 @@
 require_relative "./Line.rb"
 
 class Train
-    attr_reader :start_point, :train_direction
+    attr_reader :start_point, :train_direction, :timetable
 
     def initialize (start_num, train_direction, line)
         @start_num = start_num
@@ -14,7 +14,7 @@ class Train
         @station_arr = line.stations_names
         @distances = line.distances
         @station_index = @start_num
-        @speed = 0.5
+        @timetable = {}
         print "Train -- > #{@start_point} -- #{@train_direction}\n"
         # print "station_arr - #{@station_arr} -- dist #{@distances}\n"
     end
@@ -22,51 +22,66 @@ class Train
     def cal_time
         #Station - time
         #start at 6:00
-        time = 600
-        timetable = {600 => @start_point}
+        time = 1
+        @timetable = {"#{@start_point} #{@train_direction}" => [1]}
 
-        while time < 700
+        while time < 100
         #iterate until 8:00
         #look at distances
             if(@train_direction == "E")
-                print "s_i - #{@station_index} |"
-                print "dist - #{@distances[@station_index]} |"
-                print "s_l - #{@station_arr.length - 1}\n"
+                # print "s_i - #{@station_index} |"
+                # print "dist - #{@distances[@station_index]} |"
 
-                time += @distances[(@station_index - 1)]      #typeError
-                timetable[time] = @station_arr[(@station_index - 1)]
+                time += @distances[(@station_index - 1)]
 
                 if(@station_index > 1)
                     @station_index = (@station_index - 1)
-                else
+                elsif(@station_index <= 1)
                     @train_direction = "W"
                     @station_index = 0
                 end
 
-
             elsif(@train_direction == "W")
-                print "s_i - #{@station_index} |"
-                print "dist - #{@distances[@station_index]} |"
-                print "s_l - #{@station_arr.length - 1}\n"
+                # print "s_i - #{@station_index} |"
+                # print "dist - #{@distances[@station_index]} |"
 
                 time += @distances[@station_index]
-                timetable[time] = @station_arr[@station_index]
 
-                if(@station_index <= (@station_arr.length - 2))
+                if(@station_index < (@station_arr.length - 2))
                     @station_index = @station_index + 1
-                elsif @station_index == (@station_arr.length - 1)
+                elsif @station_index >= (@station_arr.length - 2)
                     @train_direction = "E"
                     @station_index = (@station_arr.length - 1)
                 end
 
-            # elsif(@train_direction == "N" && @station_index != 0)
-            #     time += @distances[@station_index - 1] / @speed
-            # elsif(@train_direction == "S" && @station_index != distances.length)
-            #     time += @distances[@station_index] / @speed
-            # end
+            elsif(@train_direction == "N")
+
+                    time += @distances[(@station_index - 1)]
+    
+                    if(@station_index > 1)
+                        @station_index = (@station_index - 1)
+                    elsif(@station_index <= 1)
+                        @train_direction = "S"
+                        @station_index = 0
+                    end
+    
+            elsif(@train_direction == "S")
+
+                    time += @distances[@station_index]
+    
+                    if(@station_index < (@station_arr.length - 2))
+                        @station_index = @station_index + 1
+                    elsif @station_index >= (@station_arr.length - 2)
+                        @train_direction = "N"
+                        @station_index = (@station_arr.length - 1)
+                    end
             end
             
+            if(@timetable.has_key?("#{@station_arr[@station_index]} #{@train_direction}"))
+                @timetable["#{@station_arr[@station_index]} #{@train_direction}"].push(time) 
+            else
+                @timetable["#{@station_arr[@station_index]} #{@train_direction}"] = [time] 
+            end
         end
-        return timetable
     end
 end
