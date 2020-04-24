@@ -5,7 +5,9 @@
 require_relative "./Line.rb"
 
 class Train
-    attr_reader :start_point, :train_direction, :timetable
+    attr_reader :start_point, :train_direction, :timetable, :line_name
+
+    @@all_trains = []
 
     def initialize (start_num, train_direction, line)
         @start_num = start_num
@@ -14,7 +16,9 @@ class Train
         @station_arr = line.stations_names
         @distances = line.distances
         @station_index = @start_num
+        @line_name = line.line_name
         @timetable = {}
+        @@all_trains.push(self)
 
         #if first station - change direction
         if(@station_index == 0)
@@ -36,6 +40,10 @@ class Train
             end
         end
         print "Train - #{@start_point} - #{@train_direction}\n"
+    end
+
+    def self.all_trains
+        @@all_trains
     end
 
     def cal_time
@@ -101,6 +109,15 @@ class Train
             else
                 @timetable["#{@station_arr[@station_index]} #{@train_direction}"] = [time] 
             end
+        end
+    end
+
+    def trip_query(origin, destination, time)
+        if(timetable[origin] && timetable[destination])
+            depart_time = timetable[origin].select{|train_time| train_time > time}
+            arrive_time = timetable[destination].select{|train_time| train_time > time}
+            wait = depart_time.min - time
+            return [wait, depart_time.min, arrive_time.min, @line_name]
         end
     end
 end

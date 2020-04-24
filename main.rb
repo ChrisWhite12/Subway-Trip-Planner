@@ -50,6 +50,7 @@ def show_map
     Northern.print_line()
     Express.print_line()
     Victoria.print_line()
+    Lonely.print_line()
 
     print "\n"
 
@@ -63,13 +64,15 @@ District = Line.new("District", generate_stations(6), [2,3,3,1,1], "EW","light_r
 Northern = Line.new("Northern", generate_stations(5), [2,3,5,1], "NS","light_white")
 Express = Line.new("Express", generate_stations(3), [5,6], "NS","light_blue")
 Victoria = Line.new("Victoria", generate_stations(4), [2,2,2], "EW","light_yellow")
-# all_lines = [District,Northern,Express]
+
+Lonely = Line.new("Lonely", generate_stations(3), [2,1], "EW","light_green")
 
 # print "All lines #{Line.all_lines}\n"
 
+
 intersect_lines(District,Northern,1,2)
 intersect_lines(Express,Victoria,0,1)
-intersect_lines(District,Express,4,2)
+intersect_lines(District,Express,3,2)
 
 #create trains
 #train.new(start_point, train_direction)
@@ -94,6 +97,12 @@ train5 = Train.new(2, 'S',Express)      #if put South error
 train5.cal_time()
 # puts train5.timetable
 
+train6 = Train.new(2, 'W',Victoria)      #if put South error
+train6.cal_time()
+# puts train6.timetable
+
+#error if there is no train on line
+
 show_map()
 quit = false
 
@@ -105,9 +114,11 @@ trip3 = Trip.new(100,112)
 trip3.cal_trip()
 trip4 = Trip.new(106,100)
 trip4.cal_trip()
-# trip5 = Trip.new(113,106)         #starting at interchange
-# trip5.cal_trip()
-trip6 = Trip.new(100,117)
+trip5 = Trip.new(113,106)         #starting at interchange
+trip5.cal_trip()
+trip6 = Trip.new(106,117)
+trip6.cal_trip()
+trip6 = Trip.new(102,120)
 trip6.cal_trip()
 
 while !quit
@@ -156,7 +167,7 @@ while !quit
             print "Station number does not exist \n"
             retry
         end
-        trip = Trip.new(Station.all_stations[origin_choice],Station.all_stations[destination_choice])
+        trip = Trip.new(origin_choice,destination_choice)
         trip.cal_trip()
 
     when 2

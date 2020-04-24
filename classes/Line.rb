@@ -4,7 +4,7 @@ class Line
     attr_reader :stations, :distances, :direction, :color
     attr_accessor :line_name
 
-    @@all_lines = []
+    @@all_lines = {}
 
     def initialize (line_name, stations, distances, direction, color)
         @line_name = line_name              #string
@@ -12,7 +12,7 @@ class Line
         @distances = distances                #array of distances between each station
         @direction = direction              #direction NS or EW
         @color = color                      #string
-        @@all_lines.push(self)
+        @@all_lines[line_name] = (self)
     end
 
     def self.all_lines
