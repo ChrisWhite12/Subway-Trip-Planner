@@ -1,6 +1,6 @@
 class Station
-    attr_reader :station_name
-    attr_accessor :isInterchange, :zone
+    attr_reader :station_name, :line_name
+    attr_accessor :isInterchange
 
     #make all_stations a class varible
     @@all_stations = {}
@@ -8,10 +8,8 @@ class Station
     @@all_interchange = {}
     #remove stations that become intersections
 
-    def initialize (station_name, line_name, zone = 1, isInterchange = false)
+    def initialize (station_name, isInterchange = false)
         @station_name = station_name                #string
-        @line_name = line_name
-        @zone = zone                                #Interger
         @isInterchange = isInterchange              #boolen
         @@all_stations[@@station_num] = station_name
         @@station_num += 1

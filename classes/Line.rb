@@ -4,12 +4,19 @@ class Line
     attr_reader :stations, :distances, :direction, :color
     attr_accessor :line_name
 
+    @@all_lines = []
+
     def initialize (line_name, stations, distances, direction, color)
         @line_name = line_name              #string
         @stations = stations                #array of station objects
         @distances = distances                #array of distances between each station
         @direction = direction              #direction NS or EW
         @color = color                      #string
+        @@all_lines.push(self)
+    end
+
+    def self.all_lines
+        @@all_lines
     end
 
     def print_line
@@ -31,7 +38,7 @@ class Line
         }
         print "    <- #{@line_name} -- #{@direction}\n"
         @stations.each{|stat|
-        print "#{stat.station_name} - "
+        print " #{stat.station_name} "
         }
         print "\n"
     end

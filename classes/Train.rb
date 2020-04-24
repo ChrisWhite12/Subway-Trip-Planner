@@ -15,8 +15,27 @@ class Train
         @distances = line.distances
         @station_index = @start_num
         @timetable = {}
-        print "Train -- > #{@start_point} -- #{@train_direction}\n"
-        # print "station_arr - #{@station_arr} -- dist #{@distances}\n"
+
+        #if first station - change direction
+        if(@station_index == 0)
+            case line.direction
+            when 'NS'
+                @train_direction = 'S'
+            when 'EW'
+                @train_direction = 'W'
+            end
+        end
+        
+        #if last station - change direction
+        if(@station_index == (@station_arr.length - 1))
+            case line.direction
+            when 'NS'
+                @train_direction = 'N'
+            when 'EW'
+                @train_direction = 'E'
+            end
+        end
+        print "Train - #{@start_point} - #{@train_direction}\n"
     end
 
     def cal_time
