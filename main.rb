@@ -14,17 +14,10 @@
 #   gems to use     colorize, Faker, Rspec? maybe
 
 require "faker"
-require "espeak"
 require_relative "./classes/Line.rb"
 require_relative "./classes/Train.rb"
 require_relative "./classes/Station.rb"
 require_relative "./classes/Trip.rb"
-
-include ESpeak
-
-speech = Speech.new("Hallo Welt", voice: "de")
-speech.save("hello-de.mp3") # invokes espeak + lame
-speech.speak()
 
 def intersect_lines(line1,line2,stat1,stat2)
 
