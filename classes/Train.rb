@@ -39,7 +39,7 @@ class Train
                 @train_direction = 'E'
             end
         end
-        print "Train - #{@start_point} - #{@train_direction}\n"
+        # print "Train - #{@start_point} - #{@train_direction}\n"
     end
 
     def self.all_trains
@@ -47,13 +47,11 @@ class Train
     end
 
     def cal_time
-        #Station - time
-        #start at 6:00
         time = 1
         @timetable = {"#{@start_point} #{@train_direction}" => [1]}
 
         while time < 100
-        #iterate until 8:00
+        #iterate for 100 min
         #look at distances
             if(@train_direction == "E")
                 # print "s_i - #{@station_index} |"

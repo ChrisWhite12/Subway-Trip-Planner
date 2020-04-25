@@ -14,10 +14,17 @@
 #   gems to use     colorize, Faker, Rspec? maybe
 
 require "faker"
+require "espeak"
 require_relative "./classes/Line.rb"
 require_relative "./classes/Train.rb"
 require_relative "./classes/Station.rb"
 require_relative "./classes/Trip.rb"
+
+include ESpeak
+
+speech = Speech.new("Hallo Welt", voice: "de")
+speech.save("hello-de.mp3") # invokes espeak + lame
+speech.speak()
 
 def intersect_lines(line1,line2,stat1,stat2)
 
@@ -52,12 +59,9 @@ def show_map
     Victoria.print_line()
     Lonely.print_line()
 
-    print "\n"
-
-    print "All stations - #{Station.all_stations}\n"
-    print "All interchanges - #{Station.all_interchange}\n"
-    print "\n"
 end
+
+testing = (ARGV[0] == "testing")
 
 #Create lines
 District = Line.new("District", generate_stations(6), [2,3,3,1,1], "EW","light_red")
@@ -106,20 +110,26 @@ train6.cal_time()
 show_map()
 quit = false
 
-trip1 = Trip.new(100,102)
-trip1.cal_trip()
-trip2 = Trip.new(100,113)
-trip2.cal_trip()
-trip3 = Trip.new(100,112)
-trip3.cal_trip()
-trip4 = Trip.new(106,100)
-trip4.cal_trip()
-trip5 = Trip.new(113,106)         #starting at interchange
-trip5.cal_trip()
-trip6 = Trip.new(106,117)
-trip6.cal_trip()
-trip6 = Trip.new(102,120)
-trip6.cal_trip()
+if (testing)
+    print "All stations - #{Station.all_stations}\n"
+    print "All interchanges - #{Station.all_interchange}\n"
+    print "\n"
+
+    trip1 = Trip.new(100,102)
+    trip1.cal_trip()
+    trip2 = Trip.new(100,113)
+    trip2.cal_trip()
+    trip3 = Trip.new(100,112)
+    trip3.cal_trip()
+    trip4 = Trip.new(106,100)
+    trip4.cal_trip()
+    trip5 = Trip.new(113,106)         #starting at interchange
+    trip5.cal_trip()
+    trip6 = Trip.new(106,117)
+    trip6.cal_trip()
+    trip6 = Trip.new(102,120)
+    trip6.cal_trip()
+end
 
 while !quit
     menu_choice = -1
@@ -133,7 +143,7 @@ while !quit
     print "4 - Quit\n"
     print "----------------------------------\n"
     begin
-    menu_choice = gets.chomp.to_i
+    menu_choice = STDIN.gets.chomp.to_i
 
     #if NaN generate error
     raise TypeError, "NaN" if(menu_choice == 0)
@@ -148,13 +158,13 @@ while !quit
         begin
 
         print "Origin? "
-        origin_choice = gets.chomp.to_i
+        origin_choice = STDIN.gets.chomp.to_i
         
         raise TypeError, "NaN" if(origin_choice == 0)
         raise StandardError, "No number" if(Station.all_stations[origin_choice] == nil)
         
         print "Destination? "
-        destination_choice = gets.chomp.to_i
+        destination_choice = STDIN.gets.chomp.to_i
 
         raise TypeError, "NaN" if(destination_choice == 0)
         raise StandardError, "No number" if(Station.all_stations[destination_choice] == nil)

@@ -142,6 +142,7 @@ class Trip
             end
             trip_ind += 1
         end
+        
         # print "FT #{final_trip} \n"
 
         trip_list = []

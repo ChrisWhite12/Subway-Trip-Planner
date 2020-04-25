@@ -1,18 +1,19 @@
 class Station
-    attr_reader :station_name, :line_name
+    attr_reader :station_name, :line_name, :num
     attr_accessor :isInterchange
 
     #make all_stations a class varible
     @@all_stations = {}
-    @@station_num = 100
+    @@station_nums = 100
     @@all_interchange = {}
     #remove stations that become intersections
 
     def initialize (station_name, isInterchange = false)
         @station_name = station_name                #string
         @isInterchange = isInterchange              #boolen
-        @@all_stations[@@station_num] = station_name
-        @@station_num += 1
+        @num = @@station_nums
+        @@all_stations[@@station_nums] = station_name
+        @@station_nums += 1
     end
 
     def self.all_stations

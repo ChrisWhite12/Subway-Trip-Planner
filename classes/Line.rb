@@ -22,6 +22,7 @@ class Line
     def print_line
         #prints the Line object by representing it with 'o' as stations and '-' as spaces between stations                      
         ind = 0
+        print "    "
         @stations.each{|stat|
             if(stat.isInterchange == false)
                 print "O"           #print o if station
@@ -36,11 +37,11 @@ class Line
             end
             ind += 1
         }
-        print "    <- #{@line_name} -- #{@direction}\n"
+        print "    <- #{@line_name} Line -- #{@direction}\n"
         @stations.each{|stat|
-        print " #{stat.station_name} "
+            print ("#{stat.station_name}(#{stat.num})".ljust(25))
         }
-        print "\n"
+        print "\n\n"
     end
 
     def stations_names
