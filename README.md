@@ -52,7 +52,7 @@ img
 
     I have completed most of the MVP features now. So I will go back through all of the objects and test edge cases or incorrect values. 
 
-
+https://medium.com/@alexleybourne/text-to-speech-in-ruby-using-gems-61e6d17b7acf
 # Help File
 ### Steps to install
 

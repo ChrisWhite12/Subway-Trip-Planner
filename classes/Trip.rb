@@ -3,13 +3,14 @@ require_relative "./Line.rb"
 require_relative "./Train.rb"
 
 class Trip
-    def initialize (origin, destination)
+    def initialize (origin, destination,time)
         @origin_num = origin
         @destination_num = destination
         @origin = Station.all_stations[origin]
         @destination = Station.all_stations[destination]
         @trip = []
         @final_path = []
+        @time = time
     end
 
     def cal_trip()
@@ -147,13 +148,12 @@ class Trip
 
         trip_list = []
         trip_ind = 0
-        time = 1
 
         while (trip_ind < final_trip.length - 1)
             query_temp = []
             
             Train.all_trains.each{|train|
-                query = train.trip_query(final_trip[trip_ind], final_trip[trip_ind+1], time)
+                query = train.trip_query(final_trip[trip_ind], final_trip[trip_ind+1], @time)
                 if(query)
                     query_temp.push(query)
                 end
@@ -164,7 +164,7 @@ class Trip
             # print "qt2 - #{query_temp[0]}\n"
 
             trip_list.push("Wait for #{query_temp[0][0]}, Train leaves #{final_trip[trip_ind]} (#{query_temp[0][3]} Line) at #{query_temp[0][1]} -> arrives #{final_trip[trip_ind+1]} at  #{query_temp[0][2]}\n")
-            time =  query_temp[0][2]
+            @time =  query_temp[0][2]
             trip_ind += 2
         end
         print "\n"

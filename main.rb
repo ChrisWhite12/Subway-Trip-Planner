@@ -19,6 +19,7 @@ require_relative "./classes/Train.rb"
 require_relative "./classes/Station.rb"
 require_relative "./classes/Trip.rb"
 
+
 def intersect_lines(line1,line2,stat1,stat2)
 
     # remove stations that become intercharnges
@@ -52,6 +53,9 @@ def show_map
     Victoria.print_line()
     Lonely.print_line()
 
+end
+
+class TimeError < StandardError
 end
 
 testing = (ARGV[0] == "testing")
@@ -150,28 +154,38 @@ while !quit
     when 1
         begin
 
-        print "Origin? "
-        origin_choice = STDIN.gets.chomp.to_i
-        
-        raise TypeError, "NaN" if(origin_choice == 0)
-        raise StandardError, "No number" if(Station.all_stations[origin_choice] == nil)
-        
-        print "Destination? "
-        destination_choice = STDIN.gets.chomp.to_i
+            print "Origin? "
+            origin_choice = STDIN.gets.chomp.to_i
+            
+            raise TypeError, "NaN" if(origin_choice == 0)
+            raise StandardError, "No number" if(Station.all_stations[origin_choice] == nil)
+            
+            print "Destination? "
+            destination_choice = STDIN.gets.chomp.to_i
 
-        raise TypeError, "NaN" if(destination_choice == 0)
-        raise StandardError, "No number" if(Station.all_stations[destination_choice] == nil)
-        
-        #if NaN generate error
-        rescue TypeError
-            print "TypeError - Enter the station number\n"
-            retry
-        rescue StandardError
-            print "Station number does not exist \n"
-            retry
+            raise TypeError, "NaN" if(destination_choice == 0)
+            raise StandardError, "No number" if(Station.all_stations[destination_choice] == nil)
+
+            print "Time leaving? "
+            time_choice = STDIN.gets.chomp.to_i
+            
+            raise TimeError, "NaN" if(time_choice == 0)
+
+            trip = Trip.new(origin_choice,destination_choice,time_choice)
+            trip.cal_trip()
+
+            #if NaN generate error
+            rescue TypeError
+                print "TypeError - Enter the station number\n"
+                retry
+            rescue TimeError
+                print "Invalid time - Enter again\n"
+            rescue StandardError
+                print "Station number does not exist \n"
+                retry
         end
-        trip = Trip.new(origin_choice,destination_choice)
-        trip.cal_trip()
+
+        
 
     when 2
         print "look at map\n"

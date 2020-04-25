@@ -50,8 +50,8 @@ class Train
         time = 1
         @timetable = {"#{@start_point} #{@train_direction}" => [1]}
 
-        while time < 100
-        #iterate for 100 min
+        while time < 1000
+        #iterate for 1000 min
         #look at distances
             if(@train_direction == "E")
                 # print "s_i - #{@station_index} |"
@@ -113,7 +113,17 @@ class Train
     def trip_query(origin, destination, time)
         if(timetable[origin] && timetable[destination])
             depart_time = timetable[origin].select{|train_time| train_time > time}
+            
+            if(depart_time == [])
+                raise TimeError
+            end
+            
             arrive_time = timetable[destination].select{|train_time| train_time > time}
+
+            if(arrive_time == [])
+                raise TimeError
+            end
+            
             wait = depart_time.min - time
             return [wait, depart_time.min, arrive_time.min, @line_name]
         end
