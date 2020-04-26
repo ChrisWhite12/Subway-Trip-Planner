@@ -31,15 +31,9 @@ end
 
 def show_map
     print "\n"
-    # Line.all_lines.each{|line|
-    #     line.print_line()
-    # }
-    District.print_line()
-    Northern.print_line()
-    Express.print_line()
-    Victoria.print_line()
-    Lonely.print_line()
-
+    Line.all_lines.each{|k,line|
+        line.print_line()
+    }
 end
 
 class TimeError < StandardError
@@ -70,9 +64,9 @@ train3 = Train.new(2, 'N',Northern)
 train4 = Train.new(4, 'N',Northern)
 train5 = Train.new(2, 'S',Express, 3)
 train6 = Train.new(2, 'W',Victoria)
+
 Train.all_trains.each{|train|
     train.cal_time(1000)
-    # puts train.timetable
 }
 
 #error if there is no train on line
@@ -88,23 +82,19 @@ if (testing)                    #test different trip requests
     print "\n"
 
     trip1 = Trip.new(100,102,1)                       #same line
-    trip1.cal_trip()
-    trip1 = Trip.new(100,102,50)                      #same line, differnet time
-    trip1.cal_trip()
-    trip2 = Trip.new(100,113,1)                       #same line, destination is interchange
-    trip2.cal_trip()
-    trip3 = Trip.new(100,112,1)                       #different line
-    trip3.cal_trip()
+    trip2 = Trip.new(100,102,50)                      #same line, differnet time
+    trip3 = Trip.new(100,113,1)                       #same line, destination is interchange
+    trip4 = Trip.new(100,112,1)                       #different line
     trip5 = Trip.new(113,106,1)                       #different line, origin is interchange
-    trip5.cal_trip()
     trip6 = Trip.new(106,117,1)                       #go through 4 different lines
-    trip6.cal_trip()
-    trip6 = Trip.new(102,120,1)                       #unreachable station
-    trip6.cal_trip()
-    trip1 = Trip.new(100,102,1500)                    #same line, time doesn't exist
-    trip1.cal_trip()
+    trip7 = Trip.new(102,120,1)                       #unreachable station
+    trip8 = Trip.new(100,102,1500)                    #same line, time doesn't exist
 
-    #if error occurs print an error
+    Trip.all_trip.each{|trip|
+        trip.cal_trip()
+    }
+
+    # if error occurs print an error
     rescue TimeError
         print "Invalid time \n"
     rescue StandardError
@@ -127,7 +117,7 @@ while !quit
     begin
 
     menu_choice = STDIN.gets.chomp.to_i                     #get menu input from user
-
+    
     #if NaN generate error
     raise TypeError, "NaN" if(menu_choice == 0)
 
@@ -135,11 +125,12 @@ while !quit
         print "TypeError - Select menu number\n"
     end
 
+    
+
     #validate input
     case menu_choice
     when 1
         begin
-
             print "Origin? "
             origin_choice = STDIN.gets.chomp.to_i               #get origin choice from user
             
@@ -171,14 +162,10 @@ while !quit
                 retry
         end
 
-        
-
     when 2
-        print "look at map\n"
         show_map()
         
     when 3
-        print "timetable\n"
         Train.all_trains.each{|train|
             print "Train - #{train.line_name} Line\n"
             print "---------------------------------------\n"
@@ -189,7 +176,7 @@ while !quit
 
         }
     when 4
-        print "quiting\n"
+        print "Quiting!\n"
         quit = true
     else
         print "Not a menu item \n"

@@ -108,25 +108,48 @@ class Train
         end
     end
 
-    def trip_query(origin, destination, time)      
+    def trip_query(origin, destination, time, ad_time = 'D')      
         if(timetable[origin] && timetable[destination])                                 #if there is a timetable for origin and destination
-            depart_time = timetable[origin].select{|train_time| train_time > time}      #look at time at origin station, return times greater than asked time 
-            
-            if(depart_time == [])                                                       #if depart_time doesn't exist raise error
-                raise TimeError
-            end
-            
-            arrive_time = timetable[destination].select{|train_time| train_time > depart_time.min} #look at time at origin station, return times greater than asked time
+            if(ad_time == "D")                                #time is departure time
 
-            if(arrive_time == [])                                                       #if arrive_time doesn't exist raise error
-                raise TimeError
-            end
-            
-            # print "dt #{depart_time} -- "
-            # print "at #{arrive_time}\n"
+                depart_time = timetable[origin].select{|train_time| train_time > time}      #look at time at origin station, return times greater than asked time 
+                
+                if(depart_time == [])                                                       #if depart_time doesn't exist raise error
+                    raise TimeError
+                end
+                
+                arrive_time = timetable[destination].select{|train_time| train_time > depart_time.min} #look at time at origin station, return times greater than asked time
 
-            wait = depart_time.min - time                                   #calculate wait time
-            return [wait, depart_time.min, arrive_time.min, @line_name]     #return times
+                if(arrive_time == [])                                                       #if arrive_time doesn't exist raise error
+                    raise TimeError
+                end
+                
+                # print "dt #{depart_time} -- "
+                # print "at #{arrive_time}\n"
+                wait = depart_time.min - time                                   #calculate wait time
+                depart_out = depart_time.min
+                arrive_out = arrive_time.min
+
+            elsif(ad_time == "A")                             #time is arrival time
+                depart_time = timetable[origin].select{|train_time| train_time < time}      #look at time at origin station, return times greater than asked time 
+
+                if(depart_time == [])                                                       #if depart_time doesn't exist raise error
+                    raise TimeError
+                end
+                
+                arrive_time = timetable[destination].select{|train_time| train_time < depart_time.max} #look at time at origin station, return times greater than asked time
+
+                if(arrive_time == [])                                                       #if arrive_time doesn't exist raise error
+                    raise TimeError
+                end
+                
+                # print "dt #{depart_time} -- "
+                # print "at #{arrive_time}\n"
+                depart_out = depart_time.max
+                arrive_out = arrive_time.max
+                wait = 0;
+            end
+            return [wait, depart_out, arrive_out, @line_name]     #return times
         end
     end
 end

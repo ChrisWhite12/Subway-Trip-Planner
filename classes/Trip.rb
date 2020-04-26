@@ -3,6 +3,8 @@ require_relative "./Line.rb"
 require_relative "./Train.rb"
 
 class Trip
+    @@all_trip = []
+
     def initialize (origin, destination,time)
         @origin_num = origin
         @destination_num = destination
@@ -11,6 +13,11 @@ class Trip
         @trip = []
         @final_path = []
         @time = time
+        @@all_trip.push(self)
+    end
+
+    def self.all_trip
+        @@all_trip
     end
 
     def cal_trip()
@@ -168,11 +175,13 @@ class Trip
             # print "qt2 - #{query_temp[0]}\n"
 
             #trip list is an array of instructions
-            trip_list.push("Wait for #{query_temp[0][0]}, Train leaves #{final_trip[trip_ind]} (#{query_temp[0][3]} Line) at #{query_temp[0][1]} -> arrives #{final_trip[trip_ind+1]} at  #{query_temp[0][2]}\n")
+            trip_list.push("Wait for #{query_temp[0][0]}".ljust(15) +" Train leaves #{final_trip[trip_ind]} (#{query_temp[0][3]} Line) at #{query_temp[0][1]}".ljust(50) +" ->   arrives #{final_trip[trip_ind+1]} at  #{query_temp[0][2]}\n")
             
             @time = query_temp[0][2]
             trip_ind += 2                           #increment to next part of trip - example [inter1 E, inter2 W]
         end
+
+
         print "\n"
         puts trip_list
         print "--------------------------------------------\n"
