@@ -81,24 +81,36 @@ show_map()
 quit = false
 
 if (testing)                    #test different trip requests
+    begin
+
     print "All stations - #{Station.all_stations}\n"
     print "All interchanges - #{Station.all_interchange}\n"
     print "\n"
 
-    trip1 = Trip.new(100,102)
+    trip1 = Trip.new(100,102,1)                       #same line
     trip1.cal_trip()
-    trip2 = Trip.new(100,113)
+    trip1 = Trip.new(100,102,50)                      #same line, differnet time
+    trip1.cal_trip()
+    trip2 = Trip.new(100,113,1)                       #same line, destination is interchange
     trip2.cal_trip()
-    trip3 = Trip.new(100,112)
+    trip3 = Trip.new(100,112,1)                       #different line
     trip3.cal_trip()
-    trip4 = Trip.new(106,100)
-    trip4.cal_trip()
-    trip5 = Trip.new(113,106)
+    trip5 = Trip.new(113,106,1)                       #different line, origin is interchange
     trip5.cal_trip()
-    trip6 = Trip.new(106,117)
+    trip6 = Trip.new(106,117,1)                       #go through 4 different lines
     trip6.cal_trip()
-    trip6 = Trip.new(102,120)
+    trip6 = Trip.new(102,120,1)                       #unreachable station
     trip6.cal_trip()
+    trip1 = Trip.new(100,102,1500)                    #same line, time doesn't exist
+    trip1.cal_trip()
+
+    #if error occurs print an error
+    rescue TimeError
+        print "Invalid time \n"
+    rescue StandardError
+        print "Station number does not exist \n"
+    end
+
 end
 
 while !quit
