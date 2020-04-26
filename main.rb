@@ -1,18 +1,3 @@
-#   ------Objects-----
-#   Train obj
-#       - starting point
-#       - direction -> (north-bound, west-bound)
-#       - cal_time()    -> calculate time train will arrive at each station
-#
-#   Line obj
-#       - station names
-#       - time to travel to each
-#
-#   Station obj
-#       - price to travel to
-#
-#   gems to use     colorize, Faker, Rspec? maybe
-
 require "faker"
 require_relative "./classes/Line.rb"
 require_relative "./classes/Train.rb"
@@ -39,14 +24,16 @@ end
 def generate_stations(num)
     station_arr = []
     num.times do
-        station_arr.push(Station.new(Faker::Address.city))
+        station_arr.push(Station.new(Faker::Address.city))              #create station objects
     end
-    return station_arr
+    return station_arr                                                  #return array of station objects
 end
 
 def show_map
     print "\n"
-    
+    # Line.all_lines.each{|line|
+    #     line.print_line()
+    # }
     District.print_line()
     Northern.print_line()
     Express.print_line()
@@ -58,56 +45,42 @@ end
 class TimeError < StandardError
 end
 
-testing = (ARGV[0] == "testing")
+testing = (ARGV[0] == "testing")            #get argument to check if to run testing
 
-#Create lines
-District = Line.new("District", generate_stations(6), [2,3,3,1,1], "EW","light_red")
-Northern = Line.new("Northern", generate_stations(5), [2,3,5,1], "NS","light_white")
-Express = Line.new("Express", generate_stations(3), [5,6], "NS","light_blue")
-Victoria = Line.new("Victoria", generate_stations(4), [2,2,2], "EW","light_yellow")
+#Create lines - (name, stations, distances, direction, color)
+District = Line.new("District", generate_stations(6), [8,12,12,4,4], "EW","light_red")
+Northern = Line.new("Northern", generate_stations(5), [8,12,20,4], "NS","light_white")
+Express = Line.new("Express", generate_stations(3), [20,24], "NS","light_blue")
+Victoria = Line.new("Victoria", generate_stations(4), [8,8,8], "EW","light_yellow")
 
-Lonely = Line.new("Lonely", generate_stations(3), [2,1], "EW","light_green")
+Lonely = Line.new("Lonely", generate_stations(3), [8,4], "EW","light_green")
 
 # print "All lines #{Line.all_lines}\n"
-
 
 intersect_lines(District,Northern,1,2)
 intersect_lines(Express,Victoria,0,1)
 intersect_lines(District,Express,3,2)
 
 #create trains
-#train.new(start_point, train_direction)
+#train.new(start_point, train_direction,line)
 
 train1 = Train.new(1, 'E',District)
-train1.cal_time()
-# puts train1.timetable
-
 train2 = Train.new(3, 'W',District)
-train2.cal_time()
-# puts train2.timetable
-
 train3 = Train.new(2, 'N',Northern)
-train3.cal_time()
-# puts train3.timetable
-
 train4 = Train.new(4, 'N',Northern)
-train4.cal_time()
-# puts train4.timetable
-
-train5 = Train.new(2, 'S',Express)      #if put South error
-train5.cal_time()
-# puts train5.timetable
-
-train6 = Train.new(2, 'W',Victoria)      #if put South error
-train6.cal_time()
-# puts train6.timetable
+train5 = Train.new(2, 'S',Express, 3)
+train6 = Train.new(2, 'W',Victoria)
+Train.all_trains.each{|train|
+    train.cal_time(1000)
+    # puts train.timetable
+}
 
 #error if there is no train on line
 
 show_map()
 quit = false
 
-if (testing)
+if (testing)                    #test different trip requests
     print "All stations - #{Station.all_stations}\n"
     print "All interchanges - #{Station.all_interchange}\n"
     print "\n"
@@ -120,7 +93,7 @@ if (testing)
     trip3.cal_trip()
     trip4 = Trip.new(106,100)
     trip4.cal_trip()
-    trip5 = Trip.new(113,106)         #starting at interchange
+    trip5 = Trip.new(113,106)
     trip5.cal_trip()
     trip6 = Trip.new(106,117)
     trip6.cal_trip()
@@ -140,7 +113,8 @@ while !quit
     print "4 - Quit\n"
     print "----------------------------------\n"
     begin
-    menu_choice = STDIN.gets.chomp.to_i
+
+    menu_choice = STDIN.gets.chomp.to_i                     #get menu input from user
 
     #if NaN generate error
     raise TypeError, "NaN" if(menu_choice == 0)
@@ -155,26 +129,26 @@ while !quit
         begin
 
             print "Origin? "
-            origin_choice = STDIN.gets.chomp.to_i
+            origin_choice = STDIN.gets.chomp.to_i               #get origin choice from user
             
-            raise TypeError, "NaN" if(origin_choice == 0)
-            raise StandardError, "No number" if(Station.all_stations[origin_choice] == nil)
+            raise TypeError, "NaN" if(origin_choice == 0)                                           #return error if not a number
+            raise StandardError, "No number" if(Station.all_stations[origin_choice] == nil)         #return error if station doesn't exist
             
             print "Destination? "
-            destination_choice = STDIN.gets.chomp.to_i
+            destination_choice = STDIN.gets.chomp.to_i          #get destination choice from user
 
-            raise TypeError, "NaN" if(destination_choice == 0)
-            raise StandardError, "No number" if(Station.all_stations[destination_choice] == nil)
+            raise TypeError, "NaN" if(destination_choice == 0)                                      #return error if not a number
+            raise StandardError, "No number" if(Station.all_stations[destination_choice] == nil)    #return error if station doesn't exist        
 
             print "Time leaving? "
-            time_choice = STDIN.gets.chomp.to_i
+            time_choice = STDIN.gets.chomp.to_i                 #get time to depart by
             
-            raise TimeError, "NaN" if(time_choice == 0)
+            raise TimeError, "NaN" if(time_choice == 0)         #return error if not a number
 
-            trip = Trip.new(origin_choice,destination_choice,time_choice)
-            trip.cal_trip()
+            trip = Trip.new(origin_choice,destination_choice,time_choice)       #create trip object
+            trip.cal_trip()                                                     #calculate path
 
-            #if NaN generate error
+            #if error occurs print an error and retry
             rescue TypeError
                 print "TypeError - Enter the station number\n"
                 retry
@@ -193,6 +167,15 @@ while !quit
         
     when 3
         print "timetable\n"
+        Train.all_trains.each{|train|
+            print "Train - #{train.line_name} Line\n"
+            print "---------------------------------------\n"
+            train.timetable.each{|k,v|
+                print "#{k} -> #{v}\n"
+            }
+            print "---------------------------------------\n"
+
+        }
     when 4
         print "quiting\n"
         quit = true

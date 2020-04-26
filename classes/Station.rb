@@ -2,18 +2,16 @@ class Station
     attr_reader :station_name, :line_name, :num
     attr_accessor :isInterchange
 
-    #make all_stations a class varible
     @@all_stations = {}
     @@station_nums = 100
     @@all_interchange = {}
-    #remove stations that become intersections
 
     def initialize (station_name, isInterchange = false)
         @station_name = station_name                #string
         @isInterchange = isInterchange              #boolen
-        @num = @@station_nums
-        @@all_stations[@@station_nums] = station_name
-        @@station_nums += 1
+        @num = @@station_nums                       #integer
+        @@all_stations[@@station_nums] = station_name   #hash of all of the station names relating to a number
+        @@station_nums += 1                         #increment the station number with each one created
     end
 
     def self.all_stations
@@ -24,8 +22,8 @@ class Station
         @@all_interchange
     end
 
-    def make_interchange(line1,line2)
-        @isInterchange = true
-        @@all_interchange[@station_name] = [line1,line2]
+    def make_interchange(line1,line2)                           
+        @isInterchange = true                                   #make a interchange
+        @@all_interchange[@station_name] = [line1,line2]        #add to intersection has with the station name and the lines they intersect
     end
 end
