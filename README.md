@@ -11,11 +11,11 @@ The application generates a number of objects to use and interact with each othe
 
 When the user enters the trip details, the application will look at stations and intersections to try to calculate a path. When the path is calculated, Each of the trains are inspected to see what is the earliest train that arrives after the depart-by time that is given. This repeats with every section of the trip and prints out the details to the terminal.
 
-When the trip details are printed, there is an option to travel on this trip. The trip is simulated incrementing the time every second and printing the PA messages when the train arrives.
+When the trip details are printed, there is an option to travel on this trip. The trip is simulated by incrementing the time every second and printing the PA messages when the train arrives.
 
 The other features are printing out the map and timetables. Printing the map looks at each line and displays the places where the stations are and the distances between each. The timetabes are printed by looking at each train object and displaying it's timetable. 
 
-### Outline user interaction
+### User interaction
 
 When the program starts the map and menu is printed. The user selects the options search for trip, display map, timetable or quit by typing numbers. When searching for trip the user inputs origin, destination, time to depart. The program takes these inputs, outputs the directions for the trip and returns back to the menu.
 
@@ -31,7 +31,7 @@ Main control flow diagram
 
 ![Control_flow](./docs/Flowchart_1.png)
 
-Control flow diagram for path caluclation
+Control flow diagram for path calculation
 
 ![Intersection](./docs/Flowchart_2.png)
 
@@ -44,7 +44,7 @@ Another problem that I am having is trouble with searching for the stations in a
 
 ## Update 2
 
-I encounterd a problem when creating the train objects. When it is created it places itself at a station and given a direction. The error had occured when I had placed the Train at the last station on a 'NS' line with a direction going 'S'. I plan to correct this problem by changing the direction accordingly when the Train object is initialized or it reaches the last or first station.
+I encountered a problem when creating the train objects. When it is created it places itself at a station and given a direction. The error had occured when I had placed the Train at the last station on a 'NS' line with a direction going 'S'. I plan to correct this problem by changing the direction accordingly when the Train object is initialized or it reaches the last or first station.
 
 ## Update 3
 
@@ -52,9 +52,9 @@ I had some trouble trying to work out how to calculate the path to the destinati
 
 ![Path Calculate](./docs/Path_cal.png)
 
-In this example, there is a list of stations that are intersections (s1,s2,etc.) and a list of paths that they connect to ([a,b],[a,c]) respectivly. The path to be calculated is to go from path 'a' to 'z', so the program start with path 'a'. Each of the intersections are looked at to see if any of them include 'a' and are merged into the array. The process repeats by looking at the intersections and searching for the last item of each path (in this case 'b' and 'c'). The intersections that have already been used have to be ignored to prevent contiuous looping (eg. [a,b,a,b,a,b...]). All of this repeats until 'z' is found.
+In this example, there is a list of stations that are intersections (s1,s2,etc.) and a list of paths that they connect to ([a,b],[a,c]) respectivly. The path to be calculated is to go from path 'a' to 'z', so the program starts with path 'a'. Each of the intersections are looked at to see if any of them include 'a' and are merged into the array. The process repeats by looking at the intersections and searching for the last item of each path (in this case 'b' and 'c'). The intersections that have already been used have to be ignored to prevent contiuous looping (eg. [a,b,a,b,a,b...]). All of this repeats until 'z' is found.
 
-Through out the assignment, I had used Trello to help my planning. The inital board is shown with all the requirements and planned feature.
+Through out the assignment, I had used Trello to help my planning. The inital board is shown with all the requirements and planned features.
 
 ![Trello](./docs/Trello1.png)
 
@@ -68,11 +68,11 @@ The MVP of the application is complete, however there are some features that cou
 * adding the map with the positions of the trains shown and animating it by printing and clearing the screen.
 * adding a text-to-speech to read the instructions as time goes by
 * being able to calculate multiple paths and selecting the least travel time option
-* placing the interchanges information in the line objects so that the only a selection of them are viewed when calculating the trip, not all of them.
+* placing the interchanges information in the line objects so that only a selection of them are viewed when calculating the trip, not all of them.
 * adding arrive-by time and search function
-* adding returning multiple results for trip querys
+* adding returning multiple results for trip queries
 * displaying the time correctly (6:00 am instead of 1)
-* adding number of stations to destination and ticket price
+* adding number of stations until destination and ticket price
 
 # Help File
 ### Steps to install
@@ -88,9 +88,13 @@ The gem 'bundler' has to be installed as well.
     
     gem install bundler
 
+If the application isn't already downloaded it can be cloned from github.
+
+    git clone https://github.com/ChrisWhite12/Terminal_app.git
+
 When those are installed, run the script.
     
-    run.sh
+    bash run.sh
 
 ### Explanation of features
 #### Main menu
@@ -99,17 +103,17 @@ When the application starts, the main menu will be displayed. By typing the numb
 
 #### Searching for trip
 
-When selecting the 'Search for Trip' option, the application will ask for the Origin and Destination of the trip. Enter the numbers that correspond to the stations that are displayed in the map. An Error will show if incorrect values are entered and will try again. The departure time is asked after that and requests a number which is the number of minutes past the starting point (eg.1 is 6:00 and 71 is 7:10)
+When selecting the 'Search for Trip' option, the application will ask for the Origin and Destination of the trip. Enter the numbers that correspond to the stations that are displayed in the map. An Error will show if incorrect values are entered and will try again. The departure time is asked after that and requests a number which represents the number of minutes past the starting point (eg.1 is 6:00 and 71 is 7:10)
 
 The application will calculate the path to take and what times to board the trains.
 
 #### Travel
 
-When the trip is calculated, there is an option to simulate the travel. Type 'y' to start this feature. Every second will simulate a minute passing and give PA messages when the train arrives. The application will return to the main menu when it finishes the trip.
+When the trip is calculated there is an option to simulate the travel. Type 'y' to start this feature. Every second will simulate a minute passing and give PA messages when the train arrives. The application will return to the main menu when it finishes the trip.
 
 #### Display map
 
-Selecting the Look at Map option will print the map of all the stations and the distances between each.
+Selecting the Look at Map option will print the map of all the stations.
 
 #### Display timetable
 
@@ -118,9 +122,9 @@ Selecting the Look at Timetable option will show all the trains and their timeta
 
 ### Testing
     
-Testing is run by writing testing as an argument when starting.
+Testing is run by writing 'testing' as an argument when starting.
 
->ruby main.rb testing
+    ruby main.rb testing
 
 For the Test, different types of paths and times are input into trip object and the path is calculated. The tests are given below:
 
