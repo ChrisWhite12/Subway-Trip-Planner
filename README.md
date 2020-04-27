@@ -27,8 +27,10 @@ With all of these inputs, there is validation and error checking. When entering 
 
 ### Control Flow Diagram
 
+Main control flow diagram
 ![Control_flow](./docs/Flowchart_1.png)
 
+Control flow diagram for path caluclation
 ![Intersection](./docs/Flowchart_2.png)
 
 # Status Updates
@@ -95,7 +97,7 @@ When the application starts, the main menu will be displayed. By typing the numb
 
 #### Searching for trip
 
-When selecting the 'Search for Trip' option, the application will ask for the Origin and Destination of the trip. Enter the numbers that correspond to the stations that are displayed in the map. An Error will show if incorrect values are entered and will try again. The departure time is asked after that and requests a number which is the number of minutes past the starting point (eg.1 is 6:00 and 70 is 7:10)
+When selecting the 'Search for Trip' option, the application will ask for the Origin and Destination of the trip. Enter the numbers that correspond to the stations that are displayed in the map. An Error will show if incorrect values are entered and will try again. The departure time is asked after that and requests a number which is the number of minutes past the starting point (eg.1 is 6:00 and 71 is 7:10)
 
 The application will calculate the path to take and what times to board the trains.
 
