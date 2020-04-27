@@ -43,6 +43,9 @@ end
 class TimeError < StandardError
 end
 
+class TripError < StandardError
+end
+
 testing = (ARGV[0] == "testing")            #get argument to check if to run testing
 
 #Create lines - (name, stations, distances, direction, color)
@@ -158,7 +161,7 @@ while !quit
             trip.cal_trip()                                                     #calculate path
             
             print "Travel? "
-            travel_choice = gets.chomp.downcase
+            travel_choice = STDIN.gets.chomp.downcase
             if(travel_choice == 'y')
                 trip.travel()
             end

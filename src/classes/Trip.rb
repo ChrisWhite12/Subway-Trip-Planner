@@ -158,7 +158,7 @@ class Trip
         #example* final trip will be [origin N, inter1 N , inter1 E, inter2 W, inter2 S, destination S] (inter2 is first station)
         
         print "Final_trip #{final_trip} \n"
-        
+
         trip_list = []
         trip_ind = 0
 
@@ -199,14 +199,13 @@ class Trip
             print "-#{time + 1 + @trip_start}"
 
             if(@pa[time + 1 + @trip_start] != nil)
-                print "\n PA - #{@pa[time + 1 + @trip_start]}\n"
+                print "\n PA - #{@pa[time + 1 + @trip_start]}"
                 sleep(0.5)
-                print " Mind the gap\n"
+                print " Mind the gap\n\n"
                 sleep(1)
             end
             sleep(1)
         }
-        print "\n"
     end
     
 end
