@@ -28,9 +28,11 @@ With all of these inputs, there is validation and error checking. When entering 
 ### Control Flow Diagram
 
 Main control flow diagram
+
 ![Control_flow](./docs/Flowchart_1.png)
 
 Control flow diagram for path caluclation
+
 ![Intersection](./docs/Flowchart_2.png)
 
 # Status Updates
