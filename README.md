@@ -25,7 +25,7 @@ With all of these inputs, there is validation and error checking. When entering 
 
 ### Control Flow Diagram
 
-![Control_flow](./docs/Terminal_app.png)
+![Control_flow](./docs/Terminal_App.png)
 
 # Status Updates
 ## Update 1
@@ -60,7 +60,7 @@ The MVP of the application is complete, however there are some features that cou
 * adding the map with the positions of the trains shown and animating it by printing and clearing the screen.
 * adding a text-to-speech to read the instructions as time goes by
 * being able to calculate multiple paths and selecting the least travel time option
-* placing the interchanges information in the line objects so that the only a selection of them are viewed, not all of them.
+* placing the interchanges information in the line objects so that the only a selection of them are viewed when calculating the trip, not all of them.
 * adding arrive-by time and search function
 * adding returning multiple results for trip querys
 * displaying the time correctly (6:00 am instead of 1)
@@ -69,18 +69,21 @@ The MVP of the application is complete, however there are some features that cou
 # Help File
 ### Steps to install
 To be able to run the ruby program, Ruby has to be installed.
+    
     >install ruby
 
 The gem 'bundler' has to be install as well.
+    
     >gem install bundler
 
 When those are installed, run the script.
+    
     >run.sh
 
 ### Explanation of features
 #### Main menu
 
-When the application starts, the main menu will be displayed. By typing the number of the item that the user wishs to select (eg. 1 for Search for Trip) and pressing Enter will run that option.
+When the application starts, the main menu will be displayed. By typing the number of the item that the user wishes to select (eg. 1 for Search for Trip) and pressing Enter will run that option.
 
 #### Searching for trip
 
@@ -105,7 +108,6 @@ Testing is run by writing testing as an argument when starting.
 
 For the Test, different types of paths and times are input into trip object and the path is calculated. The tests are given below:
 
-    ```
     if (testing)                    #test different trip requests
         begin
 
@@ -134,7 +136,6 @@ For the Test, different types of paths and times are input into trip object and 
         end
 
     end
-```
 
 The results are shown below:
 
