@@ -1,8 +1,12 @@
 require "faker"
+require "tts"
 require_relative "./classes/Line.rb"
 require_relative "./classes/Train.rb"
 require_relative "./classes/Station.rb"
 require_relative "./classes/Trip.rb"
+
+"Hello World!".to_file "en"
+"Hello World!".play("en", 1)
 
 
 def intersect_lines(line1,line2,stat1,stat2)
@@ -66,7 +70,7 @@ train5 = Train.new(2, 'S',Express, 3)
 train6 = Train.new(2, 'W',Victoria)
 
 Train.all_trains.each{|train|
-    train.cal_time(1000)
+    train.cal_time(600)
 }
 
 #error if there is no train on line
@@ -81,14 +85,14 @@ if (testing)                    #test different trip requests
     print "All interchanges - #{Station.all_interchange}\n"
     print "\n"
 
-    trip1 = Trip.new(100,102,1)                       #same line
-    trip2 = Trip.new(100,102,50)                      #same line, differnet time
-    trip3 = Trip.new(100,113,1)                       #same line, destination is interchange
-    trip4 = Trip.new(100,112,1)                       #different line
-    trip5 = Trip.new(113,106,1)                       #different line, origin is interchange
-    trip6 = Trip.new(106,117,1)                       #go through 4 different lines
-    trip7 = Trip.new(102,120,1)                       #unreachable station
-    trip8 = Trip.new(100,102,1500)                    #same line, time doesn't exist
+    trip1 = Trip.new(100,102,1)                         #same line
+    trip2 = Trip.new(100,102,50)                        #same line, differnet time
+    trip3 = Trip.new(100,113,1)                         #same line, destination is interchange
+    trip4 = Trip.new(100,112,1)                         #different line
+    trip5 = Trip.new(113,106,1)                         #different line, origin is interchange
+    trip6 = Trip.new(106,117,1)                         #go through 4 different lines
+    trip7 = Trip.new(102,120,1)                         #unreachable station
+    trip8 = Trip.new(100,102,1500)                      #same line, time doesn't exist
 
     Trip.all_trip.each{|trip|
         trip.cal_trip()
@@ -97,6 +101,8 @@ if (testing)                    #test different trip requests
     # if error occurs print an error
     rescue TimeError
         print "Invalid time \n"
+    rescue TypeError
+        print "Type Error \n"
     rescue StandardError
         print "Station number does not exist \n"
     end

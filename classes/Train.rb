@@ -37,6 +37,7 @@ class Train
                 @train_direction = 'E'
             end
         end
+        
         # print "Train created - #{@start_point} - #{@train_direction}\n"
     end
 
@@ -123,14 +124,15 @@ class Train
                 if(arrive_time == [])                                                       #if arrive_time doesn't exist raise error
                     raise TimeError
                 end
-                
-                # print "dt #{depart_time} -- "
-                # print "at #{arrive_time}\n"
+
+                # print "depart_ time #{depart_time} -- "
+                # print "arrival time #{arrive_time}\n"
+
                 wait = depart_time.min - time                                   #calculate wait time
                 depart_out = depart_time.min
                 arrive_out = arrive_time.min
 
-            elsif(ad_time == "A")                             #time is arrival time
+            elsif(ad_time == "A")                             #time is arrival time --- not implemented
                 depart_time = timetable[origin].select{|train_time| train_time < time}      #look at time at origin station, return times greater than asked time 
 
                 if(depart_time == [])                                                       #if depart_time doesn't exist raise error
@@ -143,8 +145,6 @@ class Train
                     raise TimeError
                 end
                 
-                # print "dt #{depart_time} -- "
-                # print "at #{arrive_time}\n"
                 depart_out = depart_time.max
                 arrive_out = arrive_time.max
                 wait = 0;

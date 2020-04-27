@@ -78,9 +78,10 @@ class Trip
                             end
 
                             inter[s_ind].push(k)                                        #push interchange to array
+                            
+                            # print "Path - #{path} Path_Temp - #{path_temp}\n"
+                            # print "Inter - #{inter}\n\n"
 
-                            # print "P - #{path} PT - #{path_temp}\n"
-                            # print "I - #{inter}\n"
                             s_ind += 1                                                  #increment index
                         end
                         
@@ -127,11 +128,7 @@ class Trip
             
             last_station = (line_ind2 == (Line.all_lines[line].stations.length - 1))        #check if it is the last station on line
             first_station = (line_ind2 == 0)                                                #check if it is the first station on line
-
-            # print "#{last_station}\n"
-            # print "#{Line.all_lines[line].stations.length - 1}\n"
-            # print "#{line_ind2}\n"
-
+            
             if(line_ind1 > line_ind2)                           #if starting point is greater than the ending point (going N or E)
                 case Line.all_lines[line].direction             #check line direction
                 when "NS"
@@ -154,9 +151,9 @@ class Trip
             trip_ind += 1                       #increment the trip index - example* will calculate trip between (origin -> inter1) (inter1 -> inter2) (inter2 -> destination)
         end
         #example* final trip will be [origin N, inter1 N , inter1 E, inter2 W, inter2 S, destination S] (inter2 is first station)
-
-        # print "FT #{final_trip} \n"
-
+        
+        # print "Final_trip #{final_trip} \n"
+        
         trip_list = []
         trip_ind = 0
 
