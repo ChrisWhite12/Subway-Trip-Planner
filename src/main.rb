@@ -156,7 +156,13 @@ while !quit
 
             trip = Trip.new(origin_choice,destination_choice,time_choice)       #create trip object
             trip.cal_trip()                                                     #calculate path
-
+            
+            print "Travel? "
+            travel_choice = gets.chomp.downcase
+            if(travel_choice == 'y')
+                trip.travel()
+            end
+            
             #if error occurs print an error and retry
             rescue TypeError
                 print "TypeError - Enter the station number\n"
@@ -166,12 +172,6 @@ while !quit
             rescue StandardError
                 print "Station number does not exist \n"
                 retry
-
-            print "Travel? "
-            travel_choice = gets.chomp.downcase
-            if(travel_choice == 'y')
-                trip.travel()
-            end
         end
 
     when 2
