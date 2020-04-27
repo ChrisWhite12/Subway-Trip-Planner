@@ -11,6 +11,8 @@ The application generates a number of objects to use and interact with each othe
 
 When the user enters the trip details, the application will look at stations and intersections to try to calculate a path. When the path is calculated, Each of the trains are inspected to see what is the earliest train that arrives after the depart-by time that is given. This repeats with every section of the trip and prints out the details to the terminal.
 
+When the trip details are printed, there is an option to travel on this trip. The trip is simulated incrementing the time every second and printing the PA messages when the train arrives.
+
 The other features are printing out the map and timetables. Printing the map looks at each line and displays the places where the stations are and the distances between each. The timetabes are printed by looking at each train object and displaying it's timetable. 
 
 ### Outline user interaction
@@ -25,7 +27,9 @@ With all of these inputs, there is validation and error checking. When entering 
 
 ### Control Flow Diagram
 
-![Control_flow](./docs/Terminal_App.png)
+![Control_flow](./docs/Flowchart_1.png)
+
+![Intersection](./docs/Flowchart_2.png)
 
 # Status Updates
 ## Update 1
@@ -70,15 +74,19 @@ The MVP of the application is complete, however there are some features that cou
 ### Steps to install
 To be able to run the ruby program, Ruby has to be installed.
     
-    >install ruby
+    sudo apt-get install ruby
+
+To check if you already have ruby installed type:
+
+    ruby -v
 
 The gem 'bundler' has to be install as well.
     
-    >gem install bundler
+    gem install bundler
 
 When those are installed, run the script.
     
-    >run.sh
+    run.sh
 
 ### Explanation of features
 #### Main menu
@@ -91,9 +99,13 @@ When selecting the 'Search for Trip' option, the application will ask for the Or
 
 The application will calculate the path to take and what times to board the trains.
 
+#### Travel
+
+When the trip is calculated, there is an option to simulate the travel. Type 'y' to start this feature. Every second will simulate a minute passing and give PA messages when the train arrives. The application will return to the main menu when it finishes the trip.
+
 #### Display map
 
-Selecting the Look at Map option will print the map of all the stations and the distances between each 
+Selecting the Look at Map option will print the map of all the stations and the distances between each.
 
 #### Display timetable
 
