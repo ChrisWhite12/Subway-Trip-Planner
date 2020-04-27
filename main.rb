@@ -5,8 +5,8 @@ require_relative "./classes/Train.rb"
 require_relative "./classes/Station.rb"
 require_relative "./classes/Trip.rb"
 
-"Hello World!".to_file "en"
-"Hello World!".play("en", 1)
+# "Hello World!".to_file "en"
+# "Hello World!".play("en", 1)
 
 
 def intersect_lines(line1,line2,stat1,stat2)
@@ -156,6 +156,12 @@ while !quit
 
             trip = Trip.new(origin_choice,destination_choice,time_choice)       #create trip object
             trip.cal_trip()                                                     #calculate path
+
+            print "Travel? "
+            travel_choice = gets.chomp.downcase
+            if(travel_choice == 'y')
+                trip.travel()
+            end
 
             #if error occurs print an error and retry
             rescue TypeError

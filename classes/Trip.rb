@@ -14,6 +14,9 @@ class Trip
         @final_path = []
         @time = time
         @@all_trip.push(self)
+        @pa = {}
+        @trip_start = @time
+        @trip_finish = 0
     end
 
     def self.all_trip
@@ -26,7 +29,8 @@ class Trip
         inter_list = []
         found_path = false
         attempts = 0;
-    
+        
+        print "\n"
         Line.all_lines.each{|k,line|    
             line.stations.each{|station|                                                    #look at all of the stations or each line
                 if (station.station_name == @origin)                                        #when found a match for the origin
@@ -38,6 +42,7 @@ class Trip
                 end
             }
         }
+        print "\n"
 
         # print "O - #{origin_line}\n"
         # print "D - #{destination_line}\n"  
@@ -152,7 +157,7 @@ class Trip
         end
         #example* final trip will be [origin N, inter1 N , inter1 E, inter2 W, inter2 S, destination S] (inter2 is first station)
         
-        # print "Final_trip #{final_trip} \n"
+        print "Final_trip #{final_trip} \n"
         
         trip_list = []
         trip_ind = 0
@@ -173,15 +178,35 @@ class Trip
 
             #trip list is an array of instructions
             trip_list.push("Wait for #{query_temp[0][0]}".ljust(15) +" Train leaves #{final_trip[trip_ind]} (#{query_temp[0][3]} Line) at #{query_temp[0][1]}".ljust(50) +" ->   arrives #{final_trip[trip_ind+1]} at  #{query_temp[0][2]}\n")
-            
+            @pa[query_temp[0][1]] = "Now arriving at #{final_trip[trip_ind]}\n"
+            @pa[query_temp[0][2]] = "Now arriving at #{final_trip[trip_ind+1]}\n"
+
+
             @time = query_temp[0][2]
             trip_ind += 2                           #increment to next part of trip - example [inter1 E, inter2 W]
         end
 
+        @trip_finish = @time
 
         print "\n"
         puts trip_list
         print "--------------------------------------------\n"
+    end
+
+    def travel
+        # print "entering travel\n"
+        (@trip_finish - @trip_start).times{|time|
+            print "-#{time + 1 + @trip_start}"
+
+            if(@pa[time + 1 + @trip_start] != nil)
+                print "\n PA - #{@pa[time + 1 + @trip_start]}\n"
+                sleep(0.5)
+                print " Mind the gap\n"
+                sleep(1)
+            end
+            sleep(1)
+        }
+        print "\n"
     end
     
 end
