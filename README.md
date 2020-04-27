@@ -54,7 +54,7 @@ Through out the assignment, I had used Trello to help my planning. The inital bo
 
 ![Trello](./docs/Trello1.png)
 
-As I has completed the tasks I had moved each item through testing and complete lists.
+As I has completed the tasks I had moved each item through the testing and completed lists.
 
 ![Trello](./docs/Trello2.png)
 
@@ -80,7 +80,7 @@ To check if you already have ruby installed type:
 
     ruby -v
 
-The gem 'bundler' has to be install as well.
+The gem 'bundler' has to be installed as well.
     
     gem install bundler
 
