@@ -12,11 +12,16 @@ class Line
         @distances = distances              #array of distances between each station
         @direction = direction              #direction NS or EW
         @color = color                      #string
+        @interchanges = {}
         @@all_lines[line_name] = (self)     #place object into all_lines hash with the line_name as key
     end
 
     def self.all_lines
         @@all_lines
+    end
+
+    def interchanges
+        @interchanges
     end
 
     def print_line

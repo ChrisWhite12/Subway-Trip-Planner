@@ -25,5 +25,7 @@ class Station
     def make_interchange(line1,line2)                           
         @isInterchange = true                                   #make a interchange
         @@all_interchange[@station_name] = [line1,line2]        #add to intersection has with the station name and the lines they intersect
+        Line.all_lines[line1].interchanges[@station_name] = [line1,line2]
+        Line.all_lines[line2].interchanges[@station_name] = [line1,line2]
     end
 end

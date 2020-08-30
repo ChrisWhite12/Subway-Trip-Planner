@@ -5,9 +5,8 @@ require_relative "./classes/Train.rb"
 require_relative "./classes/Station.rb"
 require_relative "./classes/Trip.rb"
 
-# "Hello World!".to_file "en"
-# "Hello World!".play("en", 1)
 
+# print "#{String.color_samples}\n"
 
 def intersect_lines(line1,line2,stat1,stat2)
 
@@ -53,7 +52,7 @@ District = Line.new("District", generate_stations(6), [8,12,12,4,4], "EW","light
 Northern = Line.new("Northern", generate_stations(5), [8,12,20,4], "NS","light_white")
 Express = Line.new("Express", generate_stations(3), [20,24], "NS","light_blue")
 Victoria = Line.new("Victoria", generate_stations(4), [8,8,8], "EW","light_yellow")
-
+Picadilly = Line.new("Picadilly", generate_stations(3), [12,16], "EW", "magenta")
 Lonely = Line.new("Lonely", generate_stations(3), [8,4], "EW","light_green")
 
 # print "All lines #{Line.all_lines}\n"
@@ -61,6 +60,13 @@ Lonely = Line.new("Lonely", generate_stations(3), [8,4], "EW","light_green")
 intersect_lines(District,Northern,1,2)
 intersect_lines(Express,Victoria,0,1)
 intersect_lines(District,Express,3,2)
+intersect_lines(Northern,Picadilly,0,0)
+intersect_lines(Express,Picadilly,1,2)
+
+Line.all_lines.each{|k,line|
+    print "#{Line.all_lines[k].interchanges}\n"
+}
+print "All interchanges - #{Station.all_interchange}\n"
 
 #create trains
 #train.new(start_point, train_direction,line)
@@ -71,6 +77,8 @@ train3 = Train.new(2, 'N',Northern)
 train4 = Train.new(4, 'N',Northern)
 train5 = Train.new(2, 'S',Express, 3)
 train6 = Train.new(2, 'W',Victoria)
+train6 = Train.new(2, 'W', Picadilly)
+train6 = Train.new(1, 'E', Picadilly)
 
 Train.all_trains.each{|train|
     train.cal_time(600)

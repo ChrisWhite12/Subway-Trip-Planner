@@ -17,10 +17,23 @@ class Trip
         @pa = {}
         @trip_start = @time
         @trip_finish = 0
+        @visited = {}
+        Station.all_interchange.each{ |k,v|
+            @visited[k] = false
+        }
     end
 
     def self.all_trip
         @@all_trip
+    end
+
+    def visit_check()
+        @visited.each{ |inter,v|
+            if v == false
+                return false
+            end
+        }
+        return true
     end
 
     def cal_trip()
@@ -44,36 +57,45 @@ class Trip
         }
         print "\n"
 
-        # print "O - #{origin_line}\n"
-        # print "D - #{destination_line}\n"  
+        print "O - #{origin_line}\n"
+        print "D - #{destination_line}\n"  
 
         path = origin_line;
         inter = []
 
+        #---------------------------------------------------------------------------------------------------------
+
+
+
+
         while !found_path                                                               #loop until path is found
-            if(attempts >= Station.all_interchange.length)                              #if number of attempts exceeds the number of interchanges
+            print "visit all #{visit_check()}\n"
+            if(visit_check())                              #if number of attempts exceeds the number of interchanges
                 print "Can not reach station\n"                                         #path not found 
                 break                                                                   #break and final_path will remain []
             end
 
-
             if(origin_line & destination_line != [])                                    #if on the same line
                 found_path = true                                                       #path is found
                 @trip = [@origin, @destination]                                         #update trip
-                @final_path = origin_line.flatten!                                      #path is the origin line
+                @final_path = (origin_line & destination_line).flatten;                 #path is the origin line
 
             elsif(origin_line & destination_line == [])                                 #if on different lines
                 path_temp = path                                                        #put path in a temporary varible
                 path = []                                                               #clear path
-                attempts += 1                                                           #increment number of attempts
                 s_ind = 0                                                               #initilise the station index
 
                 path_temp.each{|item|                                                   #for each path in the temporary varible
                     link = false                                                        #initilise link varible
-                    Station.all_interchange.each{|k,v|                                  #look at all interchanges
+                    print "line #{item[item.length-1]}\n"
+                    inter_save = []
 
-                        if((!([item[item.length - 1]] & v).empty?) && ((item | v).sort != item.sort))
-                            #if the last item of the path has a interchange and hasn't alredy been used
+                    Line.all_lines[item[item.length-1]].interchanges.each{|k,v|         #look at interchanges on line
+                        print "interchange - line - #{k} -- #{v}\n"
+                        print "test - #{([item[item.length - 1]] & v)} \n\n"
+
+                        if((!([item[item.length - 1]] & v).empty?) && @visited[k] == false)
+                            #if the last item of the path has a interchange
                             link = true                                                 #link is discovered
 
                             path[s_ind] = (item | v)                                    #merge the path and the intesection
@@ -82,17 +104,28 @@ class Trip
                                 inter[s_ind] = []                                       #create an empty array
                             end
 
-                            inter[s_ind].push(k)                                        #push interchange to array
-                            
-                            # print "Path - #{path} Path_Temp - #{path_temp}\n"
-                            # print "Inter - #{inter}\n\n"
+                            if inter_save != []
+                                inter_save.each{ |inter_item|
+                                    inter[s_ind].push(inter_item)
+                                }
+                                
+                            end
 
+                            inter[s_ind].push(k)                                        #push interchange to array
+                            inter_save = inter[s_ind][0...-1];
+                            @visited[k] = true;
+
+                            print "Visited #{@visited}\n"
+                            print "Path - #{path} \n"
+                            print "Path_Temp - #{path_temp}\n"
+                            print "Inter - #{inter}\n"
+                            print "inter_save - #{inter_save}\n\n"
                             s_ind += 1                                                  #increment index
                         end
                         
                     }
                     if(!link)                                                           #if can't find a interchange
-                            path[s_ind] = []                                            #set path to empty array
+                        path[s_ind] = []                                                #set path to empty array
                         s_ind += 1                                                      #increment index
                     end
                 }
@@ -101,20 +134,23 @@ class Trip
                     # print "!!#{path[item_index]} -- #{destination_line}\n"
                     destination_line.each{ |des_item|                                   #look at lines connected to destination
                     if(path[item_index] & (des_item) != [])                             #if path matches a line that is connected to the destination
+                        print "path #{path[item_index]}\n"
                         found_path = true                                               #path is found
                         @final_path = (path[item_index])                                #final_path is the path that is found
                         @trip = [@origin,inter[item_index],@destination].flatten        #trip is the origin, all the interchanges in between and the destination
                     end
                     } 
                 }
-                # print "pause \n"
-                # gets
+                print "pause \n"
+                gets
             end
         end
 
-        # print "Trip - #{@trip}\n"
-        # print "Path - #{@final_path}\n"
-        # print "--------------------------\n"
+        #------------------------------------------------------------------------------------------------------
+
+        print "Trip - #{@trip}\n"
+        print "Path - #{@final_path}\n"
+        print "--------------------------\n"
 
         #get Line.stations_names
         #get Line.distances
@@ -126,14 +162,18 @@ class Trip
         final_trip = []
 
         while (trip_ind <= @trip.length - 2)    
+            print "trip_ind - #{trip_ind} \n"
             line = @final_path[trip_ind]                                                    #look at each of the line in the path - example* line = district at final_path[0]
-            
+            print "line - #{line} \n"
+
             line_ind1 = (Line.all_lines[line].stations_names.index(@trip[trip_ind]))        #starting point on line - example* origin
             line_ind2 = (Line.all_lines[line].stations_names.index(@trip[trip_ind+1]))      #ending point on line - example* inter1
             
             last_station = (line_ind2 == (Line.all_lines[line].stations.length - 1))        #check if it is the last station on line
             first_station = (line_ind2 == 0)                                                #check if it is the first station on line
             
+            # print "l1 #{line_ind1} l2 #{line_ind2}\n"
+            # print "all_lines #{Line.all_lines[line].direction}\n"
             if(line_ind1 > line_ind2)                           #if starting point is greater than the ending point (going N or E)
                 case Line.all_lines[line].direction             #check line direction
                 when "NS"
@@ -153,11 +193,11 @@ class Trip
                     final_trip.push("#{@trip[trip_ind + 1]} #{(last_station)? 'E' : 'W'}")          #if first station, change to S (train turns around)
                 end
             end
+            print "Final Trip #{final_trip}"
             trip_ind += 1                       #increment the trip index - example* will calculate trip between (origin -> inter1) (inter1 -> inter2) (inter2 -> destination)
         end
         #example* final trip will be [origin N, inter1 N , inter1 E, inter2 W, inter2 S, destination S] (inter2 is first station)
         
-        print "Final_trip #{final_trip} \n"
 
         trip_list = []
         trip_ind = 0
@@ -165,7 +205,7 @@ class Trip
         while (trip_ind < final_trip.length - 1)
             query_temp = []
             
-        Train.all_trains.each{|train|                                                               #for each train
+            Train.all_trains.each{|train|                                                               #for each train
                 query = train.trip_query(final_trip[trip_ind], final_trip[trip_ind+1], @time)       #ask for starting and ending point on line at @time - example [origin N, inter1 N]
                 if(query)
                     query_temp.push(query)                                                          #push result to array (multiple trains)
