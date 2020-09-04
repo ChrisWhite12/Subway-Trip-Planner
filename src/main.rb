@@ -99,11 +99,15 @@ if (testing)                    #test different trip requests
     trip1 = Trip.new(100,102,1)                         #same line
     trip2 = Trip.new(100,102,50)                        #same line, differnet time
     trip3 = Trip.new(100,113,1)                         #same line, destination is interchange
-    trip4 = Trip.new(100,112,1)                         #different line
-    trip5 = Trip.new(113,106,1)                         #different line, origin is interchange
-    trip6 = Trip.new(106,117,1)                         #go through 4 different lines
-    trip7 = Trip.new(102,120,1)                         #unreachable station
-    trip8 = Trip.new(100,102,1500)                      #same line, time doesn't exist
+    trip4 = Trip.new(100,107,1)                         #different line
+    trip5 = Trip.new(108,109,1)                         #different line, origin is interchange
+    trip6 = Trip.new(100,117,1)                         #go through 4 different lines
+
+    trip7 = Trip.new(100,119,1)                         #
+    trip8 = Trip.new(100,120,1)                         #
+
+    trip9 = Trip.new(102,122,1)                         #unreachable station
+    trip10 = Trip.new(100,102,1500)                      #same line, time doesn't exist
 
     Trip.all_trip.each{|trip|
         trip.cal_trip()
@@ -168,11 +172,11 @@ while !quit
             trip = Trip.new(origin_choice,destination_choice,time_choice)       #create trip object
             trip.cal_trip()                                                     #calculate path
             
-            print "Travel? "
-            travel_choice = STDIN.gets.chomp.downcase
-            if(travel_choice == 'y')
-                trip.travel()
-            end
+            # print "Travel? "
+            # travel_choice = STDIN.gets.chomp.downcase
+            # if(travel_choice == 'y')
+            #     trip.travel()
+            # end
             
             #if error occurs print an error and retry
             rescue TypeError
