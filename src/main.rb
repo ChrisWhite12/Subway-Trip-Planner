@@ -55,7 +55,7 @@ Victoria = Line.new("Victoria", generate_stations(4), [8,8,8], "EW","light_yello
 Picadilly = Line.new("Picadilly", generate_stations(3), [12,16], "EW", "magenta")
 Lonely = Line.new("Lonely", generate_stations(3), [8,4], "EW","light_green")
 
-# print "All lines #{Line.all_lines}\n"
+# print "All lines #{Line.all_lines.interchanges}\n"
 
 intersect_lines(District,Northern,1,2)
 intersect_lines(Express,Victoria,0,1)
@@ -64,9 +64,10 @@ intersect_lines(Northern,Picadilly,0,0)
 intersect_lines(Express,Picadilly,1,2)
 
 Line.all_lines.each{|k,line|
-    print "#{Line.all_lines[k].interchanges}\n"
+    print "#{line.interchanges}\n"
 }
 print "All interchanges - #{Station.all_interchange}\n"
+print "All stations - #{Station.all_stations}\n"
 
 #create trains
 #train.new(start_point, train_direction,line)
@@ -100,14 +101,11 @@ if (testing)                    #test different trip requests
     trip2 = Trip.new(100,102,50)                        #same line, differnet time
     trip3 = Trip.new(100,113,1)                         #same line, destination is interchange
     trip4 = Trip.new(100,107,1)                         #different line
-    trip5 = Trip.new(108,109,1)                         #different line, origin is interchange
+    trip5 = Trip.new(108,110,1)                         #different line, origin is interchange
     trip6 = Trip.new(100,117,1)                         #go through 4 different lines
-
     trip7 = Trip.new(100,119,1)                         #
-    trip8 = Trip.new(100,120,1)                         #
-
-    trip9 = Trip.new(102,122,1)                         #unreachable station
-    trip10 = Trip.new(100,102,1500)                      #same line, time doesn't exist
+    trip8 = Trip.new(102,122,1)                         #unreachable station
+    trip9 = Trip.new(100,102,1500)                      #same line, time doesn't exist
 
     Trip.all_trip.each{|trip|
         trip.cal_trip()
@@ -184,9 +182,9 @@ while !quit
                 retry
             rescue TimeError
                 print "Invalid time - Enter again\n"
-            rescue StandardError
-                print "Station number does not exist \n"
-                retry
+            # rescue StandardError
+            #     print "Station number does not exist \n"
+            #     retry
         end
 
     when 2

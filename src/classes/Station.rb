@@ -7,10 +7,12 @@ class Station
     @@all_interchange = {}
 
     def initialize (station_name, isInterchange = false)
-        @station_name = station_name                #string
+        # @station_name = station_name                #string
         @isInterchange = isInterchange              #boolen
         @num = @@station_nums                       #integer
-        @@all_stations[@@station_nums] = station_name   #hash of all of the station names relating to a number
+        @station_name = @@station_nums.to_s
+        # @@all_stations[@@station_nums] = station_name
+        @@all_stations[@@station_nums] = @station_name   #hash of all of the station names relating to a number
         @@station_nums += 1                         #increment the station number with each one created
     end
 
