@@ -11,3 +11,5 @@ gem "colorize", "~> 0.8.1"
 gem "faker", "~> 2.11"
 
 gem "tts", "~> 0.7.1"
+
+gem "byebug", "~> 11.1"

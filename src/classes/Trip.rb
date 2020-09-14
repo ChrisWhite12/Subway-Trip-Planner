@@ -73,21 +73,25 @@ class Trip
         @nodes[@origin] = {weight: 0, past_node: @origin, visited: false}
         @nodes[@destination] = {weight: nil, past_node: '', visited: false}
 
-        [origin_line].flatten.each{ |o_line|
-            Line.all_lines[o_line].interchanges.each{|k,v|
-                time_w = cal_times({lines: o_line, stations:[@origin,k].flatten, time: @time})
-                # print "Inter - #{k} w - #{time_w}\n"
-                update_node(time_w,k,@origin,o_line)
-                # print "!! #{k} - #{@nodes[k]}\n"
+        
+        if(origin_line & destination_line != [])                                    #if on the same line
+            found_path = true                                                       #path is found
+            @trip_path = {lines: ((origin_line & destination_line).flatten), stations: [@origin, @destination]}
+        else
+            [origin_line].flatten.each{ |o_line|
+                # print "oline #{o_line}\n"
+                Line.all_lines[o_line].interchanges.each{|k,v|
+                    if(k != @origin)
+                        time_w = cal_times({lines: o_line, stations:[@origin,k].flatten, time: @time})
+                        # print "Inter - #{k} w - #{time_w}\n"
+                        update_node(time_w,k,@origin,o_line)
+                        # print "!! #{k} - #{@nodes[k]}\n"
+                    end
+                }
+                @nodes[@origin][:visited] = true
             }
-            @nodes[@origin][:visited] = true
-        }
 
-        while !found_path
-            if(origin_line & destination_line != [])                                    #if on the same line
-                found_path = true                                                       #path is found
-                @trip_path = {lines: ((origin_line & destination_line).flatten), stations: [@origin, @destination]}
-            else
+            while !found_path
                 #add origin node to the queue
                 # inter_process = queue.shift()
                 #if not visited and lowest weight
@@ -107,15 +111,16 @@ class Trip
                         Line.all_lines[line].interchanges.each{|k,v|
                             if(k != inter_process && !@nodes[k][:visited])
                                 time_w = cal_times({lines: line, stations: [inter_process, k], time: @nodes[inter_process][:weight]})
-                                print "trip processed - #{line}, #{[inter_process, k]}, #{@nodes[inter_process][:weight]}\n"
+                                # print "trip processed - #{line}, #{[inter_process, k]}, #{@nodes[inter_process][:weight]}\n"
                                 update_node(time_w,k,inter_process,line)
-                                # pp @nodes
+                                pp @nodes
+                                print "\n"
                             end
                         }
                         if([destination_line].flatten.include?(line))
-                            print "FOUND DESTINATION #{inter_process}\n" 
+                            # print "FOUND DESTINATION #{inter_process}\n" 
                             time_w = cal_times({lines: line, stations: [inter_process, @destination], time: @nodes[inter_process][:weight]})
-                            print "trip processed - #{line}, #{[inter_process, @destination]}, #{@nodes[inter_process][:weight]}\n"
+                            # print "trip processed - #{line}, #{[inter_process, @destination]}, #{@nodes[inter_process][:weight]}\n"
                             @nodes[@destination] = {weight: time_w, past_node: inter_process, visited: true, line: line}    
                             found_path = true
                             pp @nodes
@@ -139,8 +144,8 @@ class Trip
                     @nodes[inter_process][:visited] = true
                 end
             end
-            print "trip_path #{@trip_path}\n"
         end
+        print "trip_path #{@trip_path}\n"
         
 
 

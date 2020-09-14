@@ -32,6 +32,114 @@ def generate_stations(num)
     return station_arr                                                  #return array of station objects
 end
 
+def generate_lines(x,y,lines)
+    #start with a empty 100x100 grid
+    map = Array.new(y){Array.new(x,' ')}
+    color_array = ["light_red","white","light_blue","yellow","magenta","light_green"]
+    print "______________________MAP______________________\n"
+    lines_NS_xpos = [0]
+    lines_EW_ypos = [0]
+
+    #for 3..6 lines for NS and EW
+    for i in 0...(lines) do
+        print "i - #{i}\n"
+        rand_xs = 0
+        rand_xf = 0
+        rand_xd = 0
+        rand_y_var = nil
+
+        rand_ys = 0
+        rand_yf = 0
+        rand_yd = 0
+        rand_x_var = nil
+
+        oddeven = (i % 2)
+        y_spacing = [rand_ys-2, rand_ys-1, rand_ys, rand_ys+1, rand_ys+2]
+        x_spacing = [rand_xs-2, rand_xs-1, rand_xs, rand_xs+1, rand_xs+2]
+
+        #random number y for EW or x for NS
+        case(oddeven)
+        when 0      #when EW
+            while !(lines_EW_ypos & y_spacing == [])
+                rand_ys = (rand 1...y).floor()
+                y_spacing = [rand_ys-2, rand_ys-1, rand_ys, rand_ys+1, rand_ys+2]
+                # print "ys #{rand_ys}\n"
+                # print "!!#{lines_EW_ypos & y_spacing} -- #{y_spacing}\n"
+            end
+            rand_yf = rand_ys
+            lines_EW_ypos.push(rand_ys)
+            #random number for x_start
+
+            while (rand_xd) < (x/2)
+                rand_xs = (rand 1...(x/2)).floor()
+                #random number for x_finish
+                rand_xf = (rand (x/2)...x).floor()
+                rand_xd = rand_xf - rand_xs
+            end
+
+        when 1      #when NS
+            while !(lines_NS_xpos & x_spacing == [])
+                rand_xs = (rand 1...x).floor()
+                x_spacing = [rand_xs-2, rand_xs-1, rand_xs, rand_xs+1, rand_xs+2]
+            end
+            lines_EW_ypos.push(rand_xs)
+            rand_xf = rand_xs
+            #random number for x_start
+
+            while (rand_yd) < (y/2)
+                rand_ys = (rand 1...(y/2)).floor()
+                #random number for x_finish
+                rand_yf = (rand (y/2)...y).floor()
+                rand_yd = rand_yf - rand_ys
+            end
+
+        end
+
+        print "y - #{rand_ys} #{rand_yf} x - #{rand_xs} #{rand_xf}, yd - #{rand_yd} xd - #{rand_xd}\n"
+
+        #x_start - x_finish > 20
+        #place station randomly between x_start and x_finish, with y variation
+        map[rand_ys][rand_xs] = "\u25ef".colorize(color: color_array[i].to_sym)
+        map[rand_yf][rand_xf] = "\u25ef".colorize(color: color_array[i].to_sym)
+
+        stat_space = (rand 5..7).floor()
+        case(oddeven)
+        when 0
+            for stat in 1..((rand_xd / (stat_space)).floor()) do
+                rand_y_var = nil
+                while(rand_y_var == nil || (rand_ys+rand_y_var) <= 0 || (rand_ys+rand_y_var) >= y)
+                    rand_y_var = (rand -1...1).floor()
+                    # print "rand_y_var #{rand_y_var}\n"
+                end
+                map[rand_ys+rand_y_var][rand_xs+ (stat*5)] = "\u25ef".colorize(color: color_array[i].to_sym)
+
+            end
+
+        when 1
+            for stat in 1..((rand_yd / (stat_space)).floor()) do
+                rand_x_var = nil
+                while(rand_x_var == nil || (rand_xs+rand_x_var) <= 0 || (rand_xs+rand_x_var) >= x)
+                    rand_x_var = (rand -1...1).floor()
+                    # print "rand_y_var #{rand_y_var}\n"
+                end
+                map[rand_ys+(stat*5)][rand_xs+rand_x_var] = "\u25ef".colorize(color: color_array[i].to_sym)
+    
+            end
+        end
+        # #check if distanced < 2 spaces
+        #if close to station on other line, merge. interchange "\u25a0"
+        #workout distances
+    end
+
+
+    map.each{ |line|
+        line.each{ |point|
+            print point
+        }
+        print "\n"
+    }
+end
+
 def show_map
     print "\n"
     Line.all_lines.each{|k,line|
@@ -87,6 +195,7 @@ Train.all_trains.each{|train|
 
 #error if there is no train on line
 
+generate_lines(50,30,6)            #-----------------------------------------------------
 show_map()
 quit = false
 
@@ -133,6 +242,7 @@ while !quit
     print "3 - Look at timetable\n"
     print "4 - Quit\n"
     print "----------------------------------\n"
+
     begin
 
     menu_choice = STDIN.gets.chomp.to_i                     #get menu input from user
