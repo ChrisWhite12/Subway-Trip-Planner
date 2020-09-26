@@ -32,17 +32,34 @@ def generate_stations(num)
     return station_arr                                                  #return array of station objects
 end
 
+def map_dist(y,x,val)
+    result = []
+    for i in (-val)..(val)
+        for j in (-val)..(val)
+            result.push([i+y,j+x])
+            result.delete([y,x])
+        end
+    end
+    # print "#{result}\n"
+    return result
+end
+
+map_dist(3,3,1)
+map_dist(2,10,1)
+
 def generate_lines(x,y,lines)
     #start with a empty 100x100 grid
-    map = Array.new(y){Array.new(x,' ')}
-    color_array = ["light_red","white","light_blue","yellow","magenta","light_green"]
-    print "______________________MAP______________________\n"
+    map = Array.new(y){Array.new(x,'-')}
+    color_array = ["red","white","blue","yellow","magenta","green"]
+    names_array = ["District","Northern","Express","Victoria","Picadilly","Central"]
+    map_obj = {}
     lines_NS_xpos = [0]
     lines_EW_ypos = [0]
 
     #for 3..6 lines for NS and EW
     for i in 0...(lines) do
-        print "i - #{i}\n"
+        # print "i - #{i}\n"
+        map_obj[names_array[i].to_sym] = {}
         rand_xs = 0
         rand_xf = 0
         rand_xd = 0
@@ -95,13 +112,24 @@ def generate_lines(x,y,lines)
 
         end
 
-        print "y - #{rand_ys} #{rand_yf} x - #{rand_xs} #{rand_xf}, yd - #{rand_yd} xd - #{rand_xd}\n"
+        # print "y - #{rand_ys} #{rand_yf} x - #{rand_xs} #{rand_xf}, yd - #{rand_yd} xd - #{rand_xd}\n"
+        map_obj[names_array[i].to_sym][:rand_ys] = rand_ys
+        map_obj[names_array[i].to_sym][:rand_yf] = rand_yf
+        map_obj[names_array[i].to_sym][:rand_xs] = rand_xs
+        map_obj[names_array[i].to_sym][:rand_xf] = rand_xf
+        map_obj[names_array[i].to_sym][:rand_yd] = rand_yd
+        map_obj[names_array[i].to_sym][:rand_xd] = rand_xd
+        map_obj[names_array[i].to_sym][:direc] = (i % 2 == 0)? 'EW': 'NS';
+        map_obj[names_array[i].to_sym][:points] = [[rand_ys,rand_xs],[rand_yf,rand_xf]]
+        map_obj[names_array[i].to_sym][:inter] = []
+        map_obj[names_array[i].to_sym][:color] = color_array[i]
 
         #x_start - x_finish > 20
         #place station randomly between x_start and x_finish, with y variation
         map[rand_ys][rand_xs] = "\u25ef".colorize(color: color_array[i].to_sym)
         map[rand_yf][rand_xf] = "\u25ef".colorize(color: color_array[i].to_sym)
 
+        #add stations to line with random spacing
         stat_space = (rand 5..7).floor()
         case(oddeven)
         when 0
@@ -109,10 +137,9 @@ def generate_lines(x,y,lines)
                 rand_y_var = nil
                 while(rand_y_var == nil || (rand_ys+rand_y_var) <= 0 || (rand_ys+rand_y_var) >= y)
                     rand_y_var = (rand -1...1).floor()
-                    # print "rand_y_var #{rand_y_var}\n"
                 end
                 map[rand_ys+rand_y_var][rand_xs+ (stat*5)] = "\u25ef".colorize(color: color_array[i].to_sym)
-
+                map_obj[names_array[i].to_sym][:points].push([rand_ys+rand_y_var,rand_xs+ (stat*5)])
             end
 
         when 1
@@ -120,18 +147,92 @@ def generate_lines(x,y,lines)
                 rand_x_var = nil
                 while(rand_x_var == nil || (rand_xs+rand_x_var) <= 0 || (rand_xs+rand_x_var) >= x)
                     rand_x_var = (rand -1...1).floor()
-                    # print "rand_y_var #{rand_y_var}\n"
                 end
                 map[rand_ys+(stat*5)][rand_xs+rand_x_var] = "\u25ef".colorize(color: color_array[i].to_sym)
+                map_obj[names_array[i].to_sym][:points].push([rand_ys+(stat*5),rand_xs+rand_x_var])
     
             end
         end
-        # #check if distanced < 2 spaces
-        #if close to station on other line, merge. interchange "\u25a0"
-        #workout distances
     end
 
+    # #check if distanced < 2 spaces
+    #if close to station on other line, merge. interchange "\u25a0"
+    map_obj.each{ |line_comp1_key, line_comp1_val|
+        map_obj.each{ |line_comp2_key, line_comp2_val|
+            #if the lines are different directions
+            if(line_comp1_val[:direc] == 'NS' && line_comp2_val[:direc] == 'EW')
+                #check if they intersect at (x,y)
+                if((line_comp1_val[:rand_xs] >= line_comp2_val[:rand_xs]) && (line_comp1_val[:rand_xs] <= line_comp2_val[:rand_xf])) #line1 x between line2 x's
+                    if((line_comp2_val[:rand_ys] >= line_comp1_val[:rand_ys]) && (line_comp2_val[:rand_ys] <= line_comp1_val[:rand_yf]))    #line2 y between line1 y's
+                        line2_inter = line_comp2_val[:rand_ys]
+                        line1_inter = line_comp1_val[:rand_xs]
+                        map[line2_inter][line1_inter] = "\u25a0"                              #place an intersection on map
+                        
+                        map_dist(line2_inter,line1_inter, 2).each{|remove_stat|
 
+                            if(line_comp1_val[:points].include?(remove_stat))
+                                # print " #{line2_inter},#{line1_inter}  #{remove_stat} delete\n"
+                                line_comp1_val[:points].delete(remove_stat)
+                                map[remove_stat[0]][remove_stat[1]] = ' '
+                            end
+
+                            if(line_comp2_val[:points].include?(remove_stat))
+                                # print " #{line2_inter},#{line1_inter}  #{remove_stat} delete\n"
+                                line_comp2_val[:points].delete(remove_stat)
+                                map[remove_stat[0]][remove_stat[1]] = ' '
+                            end
+                        }
+                        
+
+                        if !(line_comp1_val[:inter].include?([line2_inter,line1_inter]))
+                            line_comp1_val[:inter].push([line2_inter,line1_inter])
+                        end
+                        if !(line_comp2_val[:inter].include?([line2_inter,line1_inter]))
+                            line_comp2_val[:inter].push([line2_inter,line1_inter])
+                        end
+                        
+                        if !(line_comp1_val[:points].include?([line2_inter,line1_inter]))     #if station not already at point
+                            line_comp1_val[:points].push([line2_inter,line1_inter])           #place station on line 1
+                        end
+                        if !(line_comp2_val[:points].include?([line2_inter,line1_inter]))
+                            line_comp2_val[:points].push([line2_inter,line1_inter])           #place station on line 2
+                        end
+                    end
+                end
+            end
+        }
+    }
+        #sort stations
+        map_obj.each{ |line_key, line_val|
+
+            if(line_val[:direc] == 'EW')
+                #sort by y
+                line_val[:points].sort!{|a,b|  a[1] <=> b[1]}
+                
+            elsif(line_val[:direc] == 'NS')
+                #sort by x
+                line_val[:points].sort!
+
+            end
+            # print "points #{line_val[:points]} - dir #{line_val[:direc]}\n"
+
+            #workout distances
+            dist = []
+            line_val[:points].each_index{|ind|
+                if(ind < (line_val[:points].length - 1))
+                    mag = (line_val[:points][ind][0] - line_val[:points][ind+1][0]).abs + (line_val[:points][ind][1] - line_val[:points][ind+1][1]).abs
+                    dist.push(mag)
+                end
+            }
+            # print "dist #{dist}\n\n"
+
+            
+            Line.new(line_key, generate_stations(line_val[:points].length), dist, line_val[:direc],line_val[:color])
+        }
+
+    pp map_obj
+    
+    print "______________________MAP______________________\n"
     map.each{ |line|
         line.each{ |point|
             print point
@@ -155,39 +256,42 @@ end
 
 testing = (ARGV[0] == "testing")            #get argument to check if to run testing
 
+generate_lines(50,30,6)            #-----------------------------------------------------
+show_map()
+
 #Create lines - (name, stations, distances, direction, color)
-District = Line.new("District", generate_stations(6), [8,12,12,4,4], "EW","light_red")
-Northern = Line.new("Northern", generate_stations(5), [8,12,20,4], "NS","light_white")
-Express = Line.new("Express", generate_stations(3), [20,24], "NS","light_blue")
-Victoria = Line.new("Victoria", generate_stations(4), [8,8,8], "EW","light_yellow")
-Picadilly = Line.new("Picadilly", generate_stations(3), [12,16], "EW", "magenta")
-Lonely = Line.new("Lonely", generate_stations(3), [8,4], "EW","light_green")
+# District = Line.new("District", generate_stations(6), [8,12,12,4,4], "EW","light_red")
+# Northern = Line.new("Northern", generate_stations(5), [8,12,20,4], "NS","light_white")
+# Express = Line.new("Express", generate_stations(3), [20,24], "NS","light_blue")
+# Victoria = Line.new("Victoria", generate_stations(4), [8,8,8], "EW","light_yellow")
+# Picadilly = Line.new("Picadilly", generate_stations(3), [12,16], "EW", "magenta")
+# Lonely = Line.new("Lonely", generate_stations(3), [8,4], "EW","light_green")
 
 # print "All lines #{Line.all_lines.interchanges}\n"
 
-intersect_lines(District,Northern,1,2)
-intersect_lines(Express,Victoria,0,1)
-intersect_lines(District,Express,3,2)
-intersect_lines(Northern,Picadilly,0,0)
-intersect_lines(Express,Picadilly,1,2)
+# intersect_lines(District,Northern,1,2)
+# intersect_lines(Express,Victoria,0,1)
+# intersect_lines(District,Express,3,2)
+# intersect_lines(Northern,Picadilly,0,0)
+# intersect_lines(Express,Picadilly,1,2)
 
 Line.all_lines.each{|k,line|
-    print "#{line.interchanges}\n"
+    # print "#{line.interchanges}\n"
 }
-print "All interchanges - #{Station.all_interchange}\n"
-print "All stations - #{Station.all_stations}\n"
+# print "All interchanges - #{Station.all_interchange}\n"
+# print "All stations - #{Station.all_stations}\n"
 
 #create trains
 #train.new(start_point, train_direction,line)
 
-train1 = Train.new(1, 'E',District)
-train2 = Train.new(3, 'W',District)
-train3 = Train.new(2, 'N',Northern)
-train4 = Train.new(4, 'N',Northern)
-train5 = Train.new(2, 'S',Express, 3)
-train6 = Train.new(2, 'W',Victoria)
-train6 = Train.new(2, 'W', Picadilly)
-train6 = Train.new(1, 'E', Picadilly)
+# train1 = Train.new(1, 'E',District)
+# train2 = Train.new(3, 'W',District)
+# train3 = Train.new(2, 'N',Northern)
+# train4 = Train.new(4, 'N',Northern)
+# train5 = Train.new(2, 'S',Express, 3)
+# train6 = Train.new(2, 'W',Victoria)
+# train6 = Train.new(2, 'W', Picadilly)
+# train6 = Train.new(1, 'E', Picadilly)
 
 Train.all_trains.each{|train|
     train.cal_time(600)
@@ -195,8 +299,7 @@ Train.all_trains.each{|train|
 
 #error if there is no train on line
 
-generate_lines(50,30,6)            #-----------------------------------------------------
-show_map()
+
 quit = false
 
 if (testing)                    #test different trip requests
