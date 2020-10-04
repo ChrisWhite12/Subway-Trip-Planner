@@ -16,6 +16,9 @@ end
 class TripError < StandardError
 end
 
+class ADError < StandardError
+end
+
 testing = (ARGV[0] == "testing")            #get argument to check if to run testing
 
 
@@ -60,8 +63,11 @@ if (testing)                    #test different trip requests
     # print "after gen trains\n"
 
     
-    pp train1.timetable
-    pp train3.timetable
+    # pp train1.timetable
+    # pp train2.timetable
+
+    # pp train5.timetable
+    # pp train6.timetable
 
     print "All stations - #{Station.all_stations}\n"
     print "All interchanges - #{Station.all_interchange}\n"
@@ -69,14 +75,14 @@ if (testing)                    #test different trip requests
 
     trip1 = Trip.new(100,102,1)                         #same line
     trip2 = Trip.new(100,102,50)                        #same line, differnet time
-    # trip3 = Trip.new(100,113,1)                         #same line, destination is interchange
-    # trip4 = Trip.new(100,107,1)                         #different line
-    # trip5 = Trip.new(108,110,1)                         #different line, origin is interchange
+    trip3 = Trip.new(100,113,1)                         #same line, destination is interchange
+    trip4 = Trip.new(100,107,1)                         #different line
+    trip5 = Trip.new(108,110,1)                         #different line, origin is interchange
     trip6 = Trip.new(100,117,89)                         #go through 4 different lines
     trip7 = Trip.new(100,117,202,'A')                         #go through 4 different lines
-    # trip7 = Trip.new(100,119,1)                         #
-    # trip8 = Trip.new(102,122,1)                         #unreachable station
-    # trip9 = Trip.new(100,102,1500)                      #same line, time doesn't exist
+    trip8 = Trip.new(100,119,1)                         #Picadilly Line
+    # trip9 = Trip.new(102,122,1)                         #unreachable station
+    trip10 = Trip.new(100,102,10,'A')                      #same line, time doesn't exist
 
     Trip.all_trip.each{|trip|
         trip.cal_trip()
@@ -94,10 +100,10 @@ if (testing)                    #test different trip requests
     end
 else
 
-    main_map = Main_map.new(60,40)
-    generate_lines(6)            
-    pp main_map
-    # show_map()
+    main_map = Main_map.new(80,40)
+    main_map.generate_lines(6)            
+    # pp main_map
+    main_map.show_map()
 
     Train.all_trains.each{|train|
         train.cal_time(600)
@@ -148,13 +154,17 @@ while !quit
             raise TypeError, "NaN" if(destination_choice == 0)                                      #return error if not a number
             raise StandardError, "No number" if(Station.all_stations[destination_choice] == nil)    #return error if station doesn't exist        
 
-            print "Time leaving? "
+            print "Arrive by or Depart by (A/D)? "
+            arrive_depart = STDIN.gets.chomp    
+            raise ADError, "Not A or D" if(arrive_depart != 'A' && arrive_depart != 'D') 
+
+
+            print "Time #{arrive_depart == 'D' ? 'Departing' : 'Arriving'} ?"
             time_choice = STDIN.gets.chomp.to_i                 #get time to depart by
             
             raise TimeError, "NaN" if(time_choice == 0)         #return error if not a number
 
-            print "Arrive by or Depart by (A/D)? "
-            arrive_depart = STDIN.gets.chomp             
+                     
 
             trip = Trip.new(origin_choice,destination_choice,time_choice,arrive_depart)       #create trip object
             trip.cal_trip()                                                     #calculate path
@@ -171,9 +181,12 @@ while !quit
                 retry
             rescue TimeError
                 print "Invalid time - Enter again\n"
-            # rescue StandardError
-            #     print "Station number does not exist \n"
-            #     retry
+                retry
+            rescue ADError
+                print "Enter A or D\n"
+                retry
+            rescue StandardError
+                print "Station number does not exist \n"
         end
 
     when 2

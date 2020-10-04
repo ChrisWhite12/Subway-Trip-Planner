@@ -15,7 +15,7 @@ class Trip
         @arrive_depart = arrive_depart
         @trip_path = {}
         @time = time
-        @pa = {}
+        @travel_info = []
         @trip_start = @time
         @trip_finish = 0
         @time_weight = {}
@@ -83,15 +83,30 @@ class Trip
         
         if(origin_line & destination_line != [])                                    #if on the same line
             found_path = true                                                       #path is found
-            @trip_path = {lines: ((origin_line & destination_line).flatten), stations: [@origin, @destination]}
+            # print "#{(origin_line & destination_line).flatten} #{[@origin,@destination].flatten} #{@time}\n"
+            time_q = cal_times({lines: (origin_line & destination_line).flatten[0], stations:[@origin,@destination].flatten, time: @time})
+            @trip_path = {lines: ((origin_line & destination_line).flatten), stations: [@origin, @destination], time_info: [time_q]}
+            
+            if(@arrive_depart == 'D')                #depart by
+                @trip_path[:time_info].each{|info|
+                    @travel_info.push("Wait for #{info[0]}, board train at #{info[1]} (station #{info[4]}) on the #{info[3]} line\n")
+                    @travel_info.push("Disembark at station #{info[5]} at #{info[2]}\n\n")
+                }
+            elsif(@arrive_depart == 'A')             #arrive by
+                @trip_path[:time_info].each{|info|
+                    @travel_info.push("Board train at #{info[1]} (station #{info[5]}) on the #{info[3]} line\n")
+                    @travel_info.push("Disembark at station #{info[4]} at #{info[2]}, wait for #{info[0]}\n\n")
+                }
+            end
+        
         else
             [origin_line].flatten.each{ |o_line|
                 # print "oline #{o_line}\n"
                 Line.all_lines[o_line].interchanges.each{|k,v|
                     if(k != @origin)
                         time_q = cal_times({lines: o_line, stations:[@origin,k].flatten, time: @time})
-                        time_w = time_q[2]
-                        print "Inter - #{k} w - #{time_w}\n"
+                        time_w = (@arrive_depart == 'D') ? time_q[2] : time_q[1]
+                        # print "Inter - #{k} w - #{time_w}\n"
                         update_node(time_w,k,@origin,o_line,time_q)
                         # print "!! #{k} - #{@nodes[k]}\n"
                     end
@@ -120,21 +135,21 @@ class Trip
                         Line.all_lines[line].interchanges.each{|k,v|
                             if(k != inter_process && !@nodes[k][:visited])
                                 time_q = cal_times({lines: line, stations: [inter_process, k], time: @nodes[inter_process][:weight]})
-                                time_w = time_q[2];
-                                print "trip processed - #{line}, #{[inter_process, k]}, #{@nodes[inter_process][:weight]}\n"
+                                time_w = (@arrive_depart == 'D') ? time_q[2] : time_q[1]
+                                # print "trip processed - #{line}, #{[inter_process, k]}, #{@nodes[inter_process][:weight]}\n"
                                 update_node(time_w,k,inter_process,line,time_q)
-                                @nodes.each{|node|
-                                    p node
-                                }
+                                # @nodes.each{|node|
+                                #     p node
+                                # }
                                 # byebug
-                                print "\n"
+                                # print "\n"
                             end
                         }
                         if([destination_line].flatten.include?(line))
                             # print "FOUND DESTINATION #{inter_process}\n" 
                             time_q = cal_times({lines: line, stations: [inter_process, @destination], time: @nodes[inter_process][:weight]})
                             # time_w = (@arrive_depart == 'D') ? time_q[2] : time_q[1]
-                            time_w = time_q[2];
+                            time_w = (@arrive_depart == 'D') ? time_q[2] : time_q[1]
                             # print "trip processed - #{line}, #{[inter_process, @destination]}, #{@nodes[inter_process][:weight]}\n"
                             @nodes[@destination] = {weight: time_w, past_node: inter_process, visited: true, line: line, time_q: time_q}    
                             found_path = true
@@ -142,26 +157,36 @@ class Trip
                                 p node
                             }
 
-                            @trip_path = {lines: [], stations: []}
+                            @trip_path = {lines: [], stations: [], time_info: []}
                             node_search = @destination
 
                             while (node_search != @origin)
                                 
                                 @trip_path[:lines].push(@nodes[node_search][:line])
                                 @trip_path[:stations].push(node_search)
+                                @trip_path[:time_info].push(@nodes[node_search][:time_q])
                                 node_search = @nodes[node_search][:past_node]
                                 # p node_search
                             end
                             @trip_path[:stations].push(@origin)
 
-                            
                             if(@arrive_depart == 'D')                #depart by
                                 @trip_path[:stations].reverse!
                                 @trip_path[:lines].reverse!
-                                print "arrival time #{time_w}\n"
+                                @trip_path[:time_info].reverse!
+                                # print "arrival time #{time_w}\n"
+                                @trip_path[:time_info].each{|info|
+                                    @travel_info.push("Wait for #{info[0]}, board train at #{info[1]} (station #{info[4]}) on the #{info[3]} line\n")
+                                    @travel_info.push("Disembark at station #{info[5]} at #{info[2]}\n\n")
+                                }
                             elsif(@arrive_depart == 'A')             #arrive by
-                                print "depature time #{time_w}\n"
+                                # print "depature time #{time_w}\n"
+                                @trip_path[:time_info].each{|info|
+                                    @travel_info.push("Board train at #{info[1]} (station #{info[5]}) on the #{info[3]} line\n")
+                                    @travel_info.push("Disembark at station #{info[4]} at #{info[2]}, wait for #{info[0]}\n\n")
+                                }
                             end
+                            
                             
                         end
                     }
@@ -169,8 +194,13 @@ class Trip
                 end
             end
         end
-        print "trip_path #{@trip_path}\n".colorize(color: :green)
+
         
+
+        print "trip_path #{@trip_path}\n\n".colorize(color: :green)
+        @travel_info.each{|info|
+            print info.colorize(color: :green)
+        }
 
 
     end
@@ -184,7 +214,7 @@ class Trip
 
         line_ind1 = (Line.all_lines[line].stations_names.index(trip_path[:stations][0]))        #starting point on line - example* origin
         line_ind2 = (Line.all_lines[line].stations_names.index(trip_path[:stations][1]))      #ending point on line - example* inter1
-        print "l1 #{line_ind1} l2 #{line_ind2}\n"
+        # print "l1 #{line_ind1} l2 #{line_ind2}\n"
         
         last_station1 = (line_ind1 == (Line.all_lines[line].stations.length - 1))        #check if it is the last station on line
         first_station1 = (line_ind1 == 0)                                                #check if it is the first station on line
@@ -200,46 +230,46 @@ class Trip
             if(@arrive_depart == 'D')
                 case Line.all_lines[line].direction             #check line direction
                 when "NS"
-                    final_trip.push("#{first_name} S")
+                    final_trip.push("#{first_name} N")
                     final_trip.push("#{last_name} #{(first_station2)? 'S' : 'N'}")         #if first station, change to S (train turns around)
                 when "EW"
-                    final_trip.push("#{first_name} E")
-                    final_trip.push("#{last_name} #{(first_station2)? 'W' : 'E'}")         #if first station, change to E (train turns around)
+                    final_trip.push("#{first_name} W")
+                    final_trip.push("#{last_name} #{(first_station2)? 'E' : 'W'}")         #if first station, change to E (train turns around)
                 end
             elsif(@arrive_depart == 'A')
                 case Line.all_lines[line].direction             #check line direction
                 when "NS"
-                    final_trip.push("#{first_name} #{(last_station1)? 'S' : 'N'}")
-                    final_trip.push("#{last_name} N")         #if first station, change to S (train turns around)
+                    final_trip.push("#{first_name} #{(last_station1)? 'N' : 'S'}")
+                    final_trip.push("#{last_name} S")         #if first station, change to S (train turns around)
                 when "EW"
-                    final_trip.push("#{first_name} #{(last_station1)? 'E' : 'W'}")
-                    final_trip.push("#{last_name} W")         #if first station, change to E (train turns around)
+                    final_trip.push("#{first_name} #{(last_station1)? 'W' : 'E'}")
+                    final_trip.push("#{last_name} E")         #if first station, change to E (train turns around)
                 end
             end
         elsif(line_ind1 < line_ind2)                          #if ending point is greater than the starting point (going S or W)
             if(@arrive_depart == 'D')
                 case Line.all_lines[line].direction             #check line direction
                 when "NS"
-                    final_trip.push("#{first_name} N")
+                    final_trip.push("#{first_name} S")
                     final_trip.push("#{last_name} #{(last_station2)? 'N' : 'S'}")          #if last station, change to N (train turns around)
                 when "EW"
-                    final_trip.push("#{first_name} W")
-                    final_trip.push("#{last_name} #{(last_station2)? 'E' : 'W'}")          #if last station, change to W (train turns around)
+                    final_trip.push("#{first_name} E")
+                    final_trip.push("#{last_name} #{(last_station2)? 'W' : 'E'}")          #if last station, change to W (train turns around)
                 end
             elsif(@arrive_depart == 'A')
                 case Line.all_lines[line].direction             #check line direction
                 when "NS"
-                    final_trip.push("#{first_name} #{(first_station1)? 'N' : 'S'}")
-                    final_trip.push("#{last_name} S")         #if first station, change to S (train turns around)
+                    final_trip.push("#{first_name} #{(first_station1)? 'S' : 'N'}")
+                    final_trip.push("#{last_name} N")         #if first station, change to S (train turns around)
                 when "EW"
-                    final_trip.push("#{first_name} #{(first_station1)? 'W' : 'E'}")
-                    final_trip.push("#{last_name} E")         #if first station, change to E (train turns around)
+                    final_trip.push("#{first_name} #{(first_station1)? 'E' : 'W'}")
+                    final_trip.push("#{last_name} W")         #if first station, change to E (train turns around)
                 end
             end
         end
 
         #example* final trip will be [origin N, inter1 N , inter1 E, inter2 W, inter2 S, destination S] (inter2 is first station)
-        print "#{final_trip}\n".colorize(color: :magenta)
+        # print "#{final_trip}\n".colorize(color: :magenta)
 
         trip_list = []
 
@@ -255,7 +285,7 @@ class Trip
         # query returns [wait, depart_out, arrive_out, @line_name]
         # print "qt1 - #{query_temp}\n"
         query_temp.sort!                        #sort by earliest train
-        print "qt2 - #{query_temp[0]}\n".colorize(color: :red)
+        # print "qt2 - #{query_temp[0]}\n".colorize(color: :red)
 
         #trip list is an array of instructions
         #return the arrive time

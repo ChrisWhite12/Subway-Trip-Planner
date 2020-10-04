@@ -126,7 +126,7 @@ class Main_map
             case(oddeven)
             when 0      #when EW
                 while !(lines_EW_ypos & y_spacing == [])
-                    rand_ys = (rand 1...y).floor()
+                    rand_ys = (rand 1...@size_y).floor()
                     y_spacing = [rand_ys-3,rand_ys-2, rand_ys-1, rand_ys, rand_ys+1, rand_ys+2,rand_ys+3]
                     # print "ys #{rand_ys}\n"
                     # print "!!#{lines_EW_ypos & y_spacing} -- #{y_spacing}\n"
@@ -135,26 +135,26 @@ class Main_map
                 lines_EW_ypos.push(rand_ys)
                 #random number for x_start
     
-                while (rand_xd) < (x/2)
-                    rand_xs = (rand 1...(x/2)).floor()
+                while (rand_xd) < (@size_x/2)
+                    rand_xs = (rand 1...(@size_x/2)).floor()
                     #random number for x_finish
-                    rand_xf = (rand (x/2)...x).floor()
+                    rand_xf = (rand (@size_x/2)...@size_x).floor()
                     rand_xd = rand_xf - rand_xs
                 end
     
             when 1      #when NS
                 while !(lines_NS_xpos & x_spacing == [])
-                    rand_xs = (rand 1...x).floor()
+                    rand_xs = (rand 1...@size_x).floor()
                     x_spacing = [rand_xs-3,rand_xs-2, rand_xs-1, rand_xs, rand_xs+1, rand_xs+2,rand_xs+3]
                 end
                 lines_NS_xpos.push(rand_xs)
                 rand_xf = rand_xs
                 #random number for x_start
     
-                while (rand_yd) < (y/2)
-                    rand_ys = (rand 1...(y/2)).floor()
+                while (rand_yd) < (@size_y/2)
+                    rand_ys = (rand 1...(@size_y/2)).floor()
                     #random number for x_finish
-                    rand_yf = (rand (y/2)...y).floor()
+                    rand_yf = (rand (@size_y/2)...@size_y).floor()
                     rand_yd = rand_yf - rand_ys
                 end
     
@@ -194,7 +194,7 @@ class Main_map
                 # print "ind - #{ind}\n"
                     if(ind > 0 && ind < (x_stat.length-1))
                         rand_y_var = nil
-                        while(rand_y_var == nil || (rand_ys+rand_y_var) <= 0 || (rand_ys+rand_y_var) >= y)
+                        while(rand_y_var == nil || (rand_ys+rand_y_var) <= 0 || (rand_ys+rand_y_var) >= @size_y)
                             rand_y_var = [-2,-1,-1,0,0,0,0,1,1,2].sample
                         end
                         @map_arr[rand_ys+rand_y_var][x_stat[ind]] = "\u25ef".colorize(color: color_array[i].to_sym)
@@ -214,7 +214,7 @@ class Main_map
                 y_stat.each_index{|ind|
                     if(ind > 0 && ind < (y_stat.length-1))
                         rand_x_var = nil
-                        while(rand_x_var == nil || (rand_xs+rand_x_var) <= 0 || (rand_xs+rand_x_var) >= x)
+                        while(rand_x_var == nil || (rand_xs+rand_x_var) <= 0 || (rand_xs+rand_x_var) >= @size_x)
                             rand_x_var = [-2,-1,-1,0,0,0,0,1,1,2].sample
                         end
                         @map_arr[y_stat[ind]][rand_xs+rand_x_var] = "\u25ef".colorize(color: color_array[i].to_sym)
@@ -371,9 +371,11 @@ class Main_map
         Line.all_lines.each{|line_key,line_val|
             p line_val.direction
             p line_val.stations.length-1
-    
-            direc_rand = (line_val.direction == 'NS')? 'N' : 'E';
-            Train.new((rand 0...(line_val.stations.length-1)), direc_rand,Line.all_lines[line_key.to_s])
+            rand_1 = rand 0...(line_val.stations.length-1)
+            rand_2 = rand 0...(line_val.stations.length-1)
+            direc_rand = (line_val.direction == 'NS')? (['N','S'].sample()) : (['E','W'].sample());
+            Train.new(rand_1, direc_rand,Line.all_lines[line_key.to_s])
+            Train.new(rand_2, direc_rand,Line.all_lines[line_key.to_s])
         }
     end
 

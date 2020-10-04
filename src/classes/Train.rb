@@ -24,7 +24,7 @@ class Train
             when 'NS'
                 @train_direction = 'S'
             when 'EW'
-                @train_direction = 'W'
+                @train_direction = 'E'
             end
         end
         
@@ -34,7 +34,7 @@ class Train
             when 'NS'
                 @train_direction = 'N'
             when 'EW'
-                @train_direction = 'E'
+                @train_direction = 'W'
             end
         end
         
@@ -125,8 +125,8 @@ class Train
                     raise TimeError
                 end
 
-                print "depart_ time #{depart_time} -- "
-                print "arrival time #{arrive_time} -- #{origin}, #{destination}\n"
+                # print "depart_ time #{depart_time} -- "
+                # print "arrival time #{arrive_time} -- #{origin}, #{destination}\n"
 
                 wait = depart_time.min - time                                   #calculate wait time
                 depart_out = depart_time.min
@@ -148,13 +148,13 @@ class Train
 
                 
                 
-                print "depart_ time #{depart_time} -- "
-                print "arrival time #{arrive_time} -- #{destination}, #{origin}\n"
+                # print "depart_ time #{depart_time} -- "
+                # print "arrival time #{arrive_time} -- #{destination}, #{origin}\n"
                 depart_out = depart_time.max
                 arrive_out = arrive_time.max
                 wait = time - arrive_out;
             end
-            return [wait, depart_out, arrive_out, @line_name]     #return times
+            return [wait, depart_out, arrive_out, @line_name, origin, destination]     #return times
         end
     end
 end
