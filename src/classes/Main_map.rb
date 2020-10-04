@@ -130,11 +130,13 @@ class Main_map
             #random number y for EW or x for NS
             case(oddeven)
             when 0      #when EW
-                while !(lines_EW_ypos & y_spacing == [])
+                attempts = 0
+                while !(lines_EW_ypos & y_spacing == []) && attempts < 5
                     rand_ys = (rand 1...@size_y).floor()
                     y_spacing = [rand_ys-3,rand_ys-2, rand_ys-1, rand_ys, rand_ys+1, rand_ys+2,rand_ys+3]
                     # print "ys #{rand_ys}\n"
                     # print "!!#{lines_EW_ypos & y_spacing} -- #{y_spacing}\n"
+                    attempts += 1
                 end
                 rand_yf = rand_ys
                 lines_EW_ypos.push(rand_ys)
@@ -148,9 +150,11 @@ class Main_map
                 end
     
             when 1      #when NS
-                while !(lines_NS_xpos & x_spacing == [])
+                attempts = 0
+                while !(lines_NS_xpos & x_spacing == []) && attempts < 5
                     rand_xs = (rand 1...@size_x).floor()
                     x_spacing = [rand_xs-3,rand_xs-2, rand_xs-1, rand_xs, rand_xs+1, rand_xs+2,rand_xs+3]
+                    attempts += 1
                 end
                 lines_NS_xpos.push(rand_xs)
                 rand_xf = rand_xs
@@ -186,12 +190,14 @@ class Main_map
             #add stations to line with random spacing
             
             case(oddeven)
-            when 0
-                x_range = Array.new(rand_xf - rand_xs - 10){|i| rand_xs+i+5}
+            when 0                  #for EW lines
+                x_range = Array.new(rand_xf - rand_xs - (@size_x/5)){|i| rand_xs+i+(@size_x/10)}      #range of where stations can be placed 
                 # print "x_range #{x_range} "
                 x_stat = []
-                while(low_diff(x_stat) < 5)
-                    x_stat = [rand_xs,x_range.sample((x_range.length / 5).floor()-1),rand_xf].flatten
+                stat_minus = 1
+                while(low_diff(x_stat) < 3)                 #while the minimum spacing between stations is 3 
+                    x_stat = [rand_xs,x_range.sample((x_range.length / 3).floor()-stat_minus),rand_xf].flatten       #get array of station positions
+                    stat_minus += 1                 #if can't fit station on line, reduce number of stations
                 end
                 # print "x_stat #{x_stat}\n"  
     
@@ -199,8 +205,8 @@ class Main_map
                 # print "ind - #{ind}\n"
                     if(ind > 0 && ind < (x_stat.length-1))
                         rand_y_var = nil
-                        while(rand_y_var == nil || (rand_ys+rand_y_var) <= 0 || (rand_ys+rand_y_var) >= @size_y)
-                            rand_y_var = [-2,-1,-1,0,0,0,0,1,1,2].sample
+                        while(rand_y_var == nil || (rand_ys+rand_y_var) <= 0 || (rand_ys+rand_y_var) >= @size_y) #while station is nil or out of bounds  
+                            rand_y_var = [-2,-1,-1,0,0,0,0,1,1,2].sample            #sample new y varience
                         end
                         @map_arr[rand_ys+rand_y_var][x_stat[ind]] = "\u25ef".colorize(color: color_array[i].to_sym)
                         @line_info[names_array[i].to_sym][:points].push([rand_ys+rand_y_var,x_stat[ind]])
@@ -208,19 +214,21 @@ class Main_map
                 }
                 
     
-            when 1
-                y_range = Array.new(rand_yf - rand_ys - 10){|i| rand_ys+i+5}
+            when 1                      #for NS lines
+                y_range = Array.new(rand_yf - rand_ys - (@size_y/5)){|i| rand_ys+i+(@size_y/10)}      #range of where stations can be placed       
                 y_stat = []
-                while(low_diff(y_stat) < 5)
-                    y_stat = [rand_ys,y_range.sample((y_range.length / 5).floor()-1),rand_yf].flatten
+                stat_minus = 1
+                while(low_diff(y_stat) < 3)             #while the minimum spacing between stations is 3 
+                    y_stat = [rand_ys,y_range.sample((y_range.length / 3).floor()-stat_minus),rand_yf].flatten       #get array of station positions
+                    stat_minus += 1                 #if can't fit station on line, reduce number of stations
                 end
                 # print "y_range #{y_range} y_stat #{y_stat}\n"
     
                 y_stat.each_index{|ind|
                     if(ind > 0 && ind < (y_stat.length-1))
                         rand_x_var = nil
-                        while(rand_x_var == nil || (rand_xs+rand_x_var) <= 0 || (rand_xs+rand_x_var) >= @size_x)
-                            rand_x_var = [-2,-1,-1,0,0,0,0,1,1,2].sample
+                        while(rand_x_var == nil || (rand_xs+rand_x_var) <= 0 || (rand_xs+rand_x_var) >= @size_x)    #while station is nil or out of bounds
+                            rand_x_var = [-2,-1,-1,0,0,0,0,1,1,2].sample            #sample new x varience
                         end
                         @map_arr[y_stat[ind]][rand_xs+rand_x_var] = "\u25ef".colorize(color: color_array[i].to_sym)
                         @line_info[names_array[i].to_sym][:points].push([y_stat[ind],rand_xs+rand_x_var])

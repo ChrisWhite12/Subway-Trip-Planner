@@ -153,10 +153,10 @@ class Trip
                             # print "trip processed - #{line}, #{[inter_process, @destination]}, #{@nodes[inter_process][:weight]}\n"
                             @nodes[@destination] = {weight: time_w, past_node: inter_process, visited: true, line: line, time_q: time_q}    
                             found_path = true
-                            @nodes.each{|node|
-                                p node
-                            }
-
+                            # @nodes.each{|node|
+                            #     p node
+                            # }
+                            pp @nodes
                             @trip_path = {lines: [], stations: [], time_info: []}
                             node_search = @destination
 

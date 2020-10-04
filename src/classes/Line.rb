@@ -44,8 +44,11 @@ class Line
             ind += 1
         }
         print "    <- #{@line_name} Line -- #{@direction}\n"
-        @stations.each{|stat|
+        @stations.each_with_index{|stat,ind|
             print ("#{stat.station_name}(#{stat.num})".ljust(30))
+            if((ind + 1) % 4 == 0)
+                print "\n"
+            end
         }
         print "\n\n"
     end
