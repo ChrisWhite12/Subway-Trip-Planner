@@ -10,7 +10,7 @@ class Main_map
     def initialize (size_x, size_y)
         @size_x = size_x
         @size_y = size_y
-        @map_arr = Array.new(size_y){Array.new(size_x,' ')}
+        @map_arr = Array.new(size_y){Array.new(size_x,'.')}
         @line_info = {}
         @@all_maps.push(self)   
     end
@@ -59,7 +59,7 @@ class Main_map
         return station_arr                                                  #return array of station objects
     end
 
-    def generate_test_lines()
+    def generate_test_lines()           
         ind = 0
         Line.all_lines.each{|k,line|
             # print "#{line.start_xy}, #{ind}\n"
@@ -85,15 +85,20 @@ class Main_map
                     for i in 1..dist
                         @map_arr[start_y+i][start_x] = "\u257d".encode('utf-8').colorize(color: line.color.to_sym)
                     end 
-                    @map_arr[start_y+1][start_x] = "\u25ef".encode('utf-8')
+                    @map_arr[start_y+i][start_x] = "\u25ef".encode('utf-8')
                     start_y += dist
                 end
             }
             ind += 1;
         }
-        # print "end of gen_test_lines \n"
-
-        # pp @map_arr
+        
+        #add intersections to map
+        @map_arr[12][8] = "\u25a0".encode('utf-8')
+        @map_arr[12][32] = "\u25a0".encode('utf-8')
+        @map_arr[22][8] = "\u25a0".encode('utf-8')
+        @map_arr[22][32] = "\u25a0".encode('utf-8')
+        @map_arr[36][32] = "\u25a0".encode('utf-8')
+        
     end
 
     def generate_lines(lines)

@@ -31,14 +31,14 @@ if (testing)                    #test different trip requests
     begin
 
     print "begin testing\n"
-    main_map = Main_map.new(50,50)
+    main_map = Main_map.new(50,40)
     
     #Create lines - (name, stations, distances, direction, color)
     District = Line.new("District", main_map.generate_stations(6), [8,12,12,4,4], "EW","light_red",[12,0])
     Northern = Line.new("Northern", main_map.generate_stations(5), [8,4,6,4], "NS","light_white",[0,8])
     Express = Line.new("Express", main_map.generate_stations(3), [10,14], "NS","light_blue",[12,32])
     Victoria = Line.new("Victoria", main_map.generate_stations(4), [8,8,8], "EW","light_yellow",[36,24])
-    Picadilly = Line.new("Picadilly", main_map.generate_stations(3), [12,16], "EW", "magenta",[22,8])
+    Picadilly = Line.new("Picadilly", main_map.generate_stations(3), [10,14], "EW", "magenta",[22,8])
     Lonely = Line.new("Lonely", main_map.generate_stations(3), [8,4], "EW","light_green",[14,14])
     
     main_map.intersect_lines(District,Northern,1,2)
