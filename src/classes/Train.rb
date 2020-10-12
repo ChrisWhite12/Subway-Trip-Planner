@@ -113,13 +113,13 @@ class Train
         if(timetable[origin] && timetable[destination])                                 #if there is a timetable for origin and destination
             if(ad_time == "D")                                #time is departure time
 
-                depart_time = timetable[origin].select{|train_time| train_time > time}      #look at time at origin station, return times greater than asked time 
+                depart_time = timetable[origin].select{|train_time| train_time >= time}      #look at time at origin station, return times greater than asked time 
                 
                 if(depart_time == [])                                                       #if depart_time doesn't exist raise error
                     raise TimeError
                 end
                 
-                arrive_time = timetable[destination].select{|train_time| train_time >= depart_time.min} #look at time at origin station, return times greater than asked time
+                arrive_time = timetable[destination].select{|train_time| train_time > depart_time.min} #look at time at origin station, return times greater than asked time
 
                 if(arrive_time == [])                                                       #if arrive_time doesn't exist raise error
                     raise TimeError
@@ -134,24 +134,32 @@ class Train
 
             elsif(ad_time == "A")                             #time is arrival time --- not implemented
                 
-                arrive_time = timetable[origin].select{|train_time| train_time < time} #look at time at origin station, return times greater than asked time
+                arrive_time = timetable[origin].select{|train_time| train_time <= time} #look at time at origin station, return times greater than asked time
 
                 if(arrive_time == [])                                                       #if arrive_time doesn't exist raise error
-                    raise TimeError
+                    # raise TimeError
+                    # arrive_out = 999
+                    # print "Arrive_out = 999\n"
+                    return nil
+                else
+                    arrive_out = arrive_time.max
                 end
 
                 depart_time = timetable[destination].select{|train_time| train_time < arrive_time.max}      #look at time at origin station, return times greater than asked time 
 
                 if(depart_time == [])                                                       #if depart_time doesn't exist raise error
-                    raise TimeError
+                    # raise TimeError
+                    # depart_out = 999
+                    # print "depart_out = 999\n"
+                    return nil
+                else
+                    depart_out = depart_time.max
                 end
 
                 
                 
                 # print "depart_ time #{depart_time} -- "
                 # print "arrival time #{arrive_time} -- #{destination}, #{origin}\n"
-                depart_out = depart_time.max
-                arrive_out = arrive_time.max
                 wait = time - arrive_out;
             end
             return [wait, depart_out, arrive_out, @line_name, origin, destination]     #return times

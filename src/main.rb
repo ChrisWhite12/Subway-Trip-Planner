@@ -100,7 +100,7 @@ if (testing)                    #test different trip requests
     end
 else
 
-    main_map = Main_map.new(80,40)
+    main_map = Main_map.new(60,40)
     main_map.generate_lines(6)            
     # pp main_map
     main_map.show_map()

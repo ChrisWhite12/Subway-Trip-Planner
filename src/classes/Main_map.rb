@@ -195,8 +195,8 @@ class Main_map
                 # print "x_range #{x_range} "
                 x_stat = []
                 stat_minus = 1
-                while(low_diff(x_stat) < 3)                 #while the minimum spacing between stations is 3 
-                    x_stat = [rand_xs,x_range.sample((x_range.length / 3).floor()-stat_minus),rand_xf].flatten       #get array of station positions
+                while(low_diff(x_stat) < 4)                 #while the minimum spacing between stations is 3 
+                    x_stat = [rand_xs,x_range.sample((x_range.length / 4).floor()-stat_minus),rand_xf].flatten       #get array of station positions
                     stat_minus += 1                 #if can't fit station on line, reduce number of stations
                 end
                 # print "x_stat #{x_stat}\n"  
@@ -218,8 +218,8 @@ class Main_map
                 y_range = Array.new(rand_yf - rand_ys - (@size_y/5)){|i| rand_ys+i+(@size_y/10)}      #range of where stations can be placed       
                 y_stat = []
                 stat_minus = 1
-                while(low_diff(y_stat) < 3)             #while the minimum spacing between stations is 3 
-                    y_stat = [rand_ys,y_range.sample((y_range.length / 3).floor()-stat_minus),rand_yf].flatten       #get array of station positions
+                while(low_diff(y_stat) < 4)             #while the minimum spacing between stations is 3 
+                    y_stat = [rand_ys,y_range.sample((y_range.length / 4).floor()-stat_minus),rand_yf].flatten       #get array of station positions
                     stat_minus += 1                 #if can't fit station on line, reduce number of stations
                 end
                 # print "y_range #{y_range} y_stat #{y_stat}\n"
@@ -255,13 +255,13 @@ class Main_map
                                 if(line_comp1_val[:points].include?(remove_stat))
                                     # print " #{line2_inter},#{line1_inter}  #{remove_stat} delete\n"
                                     line_comp1_val[:points].delete(remove_stat)
-                                    @map_arr[remove_stat[0]][remove_stat[1]] = ' '
+                                    @map_arr[remove_stat[0]][remove_stat[1]] = '.'
                                 end
     
                                 if(line_comp2_val[:points].include?(remove_stat))
                                     # print " #{line2_inter},#{line1_inter}  #{remove_stat} delete\n"
                                     line_comp2_val[:points].delete(remove_stat)
-                                    @map_arr[remove_stat[0]][remove_stat[1]] = ' '
+                                    @map_arr[remove_stat[0]][remove_stat[1]] = '.'
                                 end
                             }
                             #-------------------if there is a station at intersection already

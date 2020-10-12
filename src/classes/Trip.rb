@@ -32,12 +32,7 @@ class Trip
     end
 
     def update_node(num,node,past_node,line,time_q)
-        if((@nodes[node][:weight] == nil || @nodes[node][:weight] > num) && @arrive_depart == 'D')
-            @nodes[node][:weight] = num
-            @nodes[node][:line] = line
-            @nodes[node][:past_node] = past_node
-            @nodes[node][:time_q] = time_q 
-        elsif((@nodes[node][:weight] == nil || @nodes[node][:weight] < num) && @arrive_depart == 'A')
+        if((@nodes[node][:weight] == nil || @nodes[node][:weight] > num) && @arrive_depart == 'D') || ((@nodes[node][:weight] == nil || @nodes[node][:weight] < num) && @arrive_depart == 'A')
             @nodes[node][:weight] = num
             @nodes[node][:line] = line
             @nodes[node][:past_node] = past_node
@@ -118,29 +113,36 @@ class Trip
                 #add origin node to the queue
                 # inter_process = queue.shift()
                 #if not visited and lowest weight
-                weight_temp = 9999
+                weight_temp = (@arrive_depart == 'D')? 9999 : 0;
                 node_result = ''
                 @nodes.each{ |node_key, node_val|
                 
-                    if(node_val[:weight] != nil && !node_val[:visited] && node_val[:weight] < weight_temp)
+                    if(node_val[:weight] != nil && !node_val[:visited] && ((node_val[:weight] < weight_temp && @arrive_depart == 'D') || (node_val[:weight] > weight_temp && @arrive_depart == 'A')))
                         weight_temp = node_val[:weight]
                         node_result = node_key
                     end
                 }
                 inter_process = node_result
+                # print "inter_process -> #{inter_process}\n"
 
                 if(!@nodes[inter_process][:visited])
-                    # print "inter_process -> #{inter_process}\n"
+                    print "inter_process -> #{inter_process}\n"
                     Station.all_interchange[inter_process].each{|line|
+                        # node_to_process = @nodes.select{|k,v| (k != inter_process && v[:visited] == false && Line.all_lines[line].interchanges.has_key?(k))}
+                        # node_to_process.each{|node|
+                        #     p node
+                        # }
                         Line.all_lines[line].interchanges.each{|k,v|
                             if(k != inter_process && !@nodes[k][:visited])
                                 time_q = cal_times({lines: line, stations: [inter_process, k], time: @nodes[inter_process][:weight]})
-                                time_w = (@arrive_depart == 'D') ? time_q[2] : time_q[1]
-                                # print "trip processed - #{line}, #{[inter_process, k]}, #{@nodes[inter_process][:weight]}\n"
-                                update_node(time_w,k,inter_process,line,time_q)
-                                # @nodes.each{|node|
-                                #     p node
-                                # }
+                                if (time_q != nil)
+                                    time_w = (@arrive_depart == 'D') ? time_q[2] : time_q[1]
+                                    # print "trip processed - #{line}, #{[inter_process, k]}, #{@nodes[inter_process][:weight]}\n"
+                                    update_node(time_w,k,inter_process,line,time_q)
+                                end
+                                @nodes.each{|node|
+                                    p node
+                                }
                                 # byebug
                                 # print "\n"
                             end
@@ -148,46 +150,44 @@ class Trip
                         if([destination_line].flatten.include?(line))
                             # print "FOUND DESTINATION #{inter_process}\n" 
                             time_q = cal_times({lines: line, stations: [inter_process, @destination], time: @nodes[inter_process][:weight]})
-                            # time_w = (@arrive_depart == 'D') ? time_q[2] : time_q[1]
-                            time_w = (@arrive_depart == 'D') ? time_q[2] : time_q[1]
-                            # print "trip processed - #{line}, #{[inter_process, @destination]}, #{@nodes[inter_process][:weight]}\n"
-                            @nodes[@destination] = {weight: time_w, past_node: inter_process, visited: true, line: line, time_q: time_q}    
-                            found_path = true
-                            # @nodes.each{|node|
-                            #     p node
-                            # }
-                            pp @nodes
-                            @trip_path = {lines: [], stations: [], time_info: []}
-                            node_search = @destination
-
-                            while (node_search != @origin)
+                            if (time_q != nil)
+                                time_w = (@arrive_depart == 'D') ? time_q[2] : time_q[1]
+                                # print "trip processed - #{line}, #{[inter_process, @destination]}, #{@nodes[inter_process][:weight]}\n"
+                                @nodes[@destination] = {weight: time_w, past_node: inter_process, visited: true, line: line, time_q: time_q}    
+                                found_path = true
                                 
-                                @trip_path[:lines].push(@nodes[node_search][:line])
-                                @trip_path[:stations].push(node_search)
-                                @trip_path[:time_info].push(@nodes[node_search][:time_q])
-                                node_search = @nodes[node_search][:past_node]
-                                # p node_search
-                            end
-                            @trip_path[:stations].push(@origin)
+                                pp @nodes
+                                @trip_path = {lines: [], stations: [], time_info: []}
+                                node_search = @destination
 
-                            if(@arrive_depart == 'D')                #depart by
-                                @trip_path[:stations].reverse!
-                                @trip_path[:lines].reverse!
-                                @trip_path[:time_info].reverse!
-                                # print "arrival time #{time_w}\n"
-                                @trip_path[:time_info].each{|info|
-                                    @travel_info.push("Wait for #{info[0]}, board train at #{info[1]} (station #{info[4]}) on the #{info[3]} line\n")
-                                    @travel_info.push("Disembark at station #{info[5]} at #{info[2]}\n\n")
-                                }
-                            elsif(@arrive_depart == 'A')             #arrive by
-                                # print "depature time #{time_w}\n"
-                                @trip_path[:time_info].each{|info|
-                                    @travel_info.push("Board train at #{info[1]} (station #{info[5]}) on the #{info[3]} line\n")
-                                    @travel_info.push("Disembark at station #{info[4]} at #{info[2]}, wait for #{info[0]}\n\n")
-                                }
+                                while (node_search != @origin)
+                                    
+                                    @trip_path[:lines].push(@nodes[node_search][:line])
+                                    @trip_path[:stations].push(node_search)
+                                    @trip_path[:time_info].push(@nodes[node_search][:time_q])
+                                    node_search = @nodes[node_search][:past_node]
+                                    # p node_search
+                                end
+                                @trip_path[:stations].push(@origin)
+
+                                if(@arrive_depart == 'D')                #depart by
+                                    @trip_path[:stations].reverse!
+                                    @trip_path[:lines].reverse!
+                                    @trip_path[:time_info].reverse!
+                                    # print "arrival time #{time_w}\n"
+                                    @trip_path[:time_info].each{|info|
+                                        @travel_info.push("Wait for #{info[0]}, board train at #{info[1]} (station #{info[4]}) on the #{info[3]} line\n")
+                                        @travel_info.push("Disembark at station #{info[5]} at #{info[2]}\n\n")
+                                    }
+                                elsif(@arrive_depart == 'A')             #arrive by
+                                    # print "depature time #{time_w}\n"
+                                    @trip_path[:time_info].each{|info|
+                                        @travel_info.push("Board train at #{info[1]} (station #{info[5]}) on the #{info[3]} line\n")
+                                        @travel_info.push("Disembark at station #{info[4]} at #{info[2]}, wait for #{info[0]}\n\n")
+                                    }
+                                end
+                            
                             end
-                            
-                            
                         end
                     }
                     @nodes[inter_process][:visited] = true
@@ -269,7 +269,7 @@ class Trip
         end
 
         #example* final trip will be [origin N, inter1 N , inter1 E, inter2 W, inter2 S, destination S] (inter2 is first station)
-        # print "#{final_trip}\n".colorize(color: :magenta)
+        print "#{final_trip} #{trip_path[:time]}\n".colorize(color: :magenta)
 
         trip_list = []
 
@@ -292,107 +292,3 @@ class Trip
         return query_temp[0]
     end
 end
-
-
-# elsif(origin_line & destination_line == [])                                 #if on different lines
-#     path_temp = path                                                        #put path in a temporary varible
-#     path = []                                                               #clear path
-#     s_ind = 0                                                               #initilise the station index
-    
-#     #----------------------------------------------------------------------------
-#     path_temp.each{|item|                                                   #for each path in the temporary varible
-#         link = false                                                        #initilise link varible
-#         inter_save = []
-
-#         Line.all_lines[item[item.length-1]].interchanges.each{|k,v|         #look at interchanges on line
-            
-#             if((!([item[item.length - 1]] & v).empty?) && @visited[k] == false)
-#                 #if the last item of the path has a interchange
-#                 link = true                                                 #link is discovered
-
-#                 path[s_ind] = (item | v)                                    #merge the path and the intesection
-                
-
-#                 if(inter[s_ind] == nil)                                     #if no interchange at index
-#                     inter[s_ind] = []                                       #create an empty array
-#                 end
-
-#                 if inter_save != []                                         #if intersections are saved (multiple intersection per line)
-#                     inter_save.each{ |inter_item|
-#                         inter[s_ind].push(inter_item)                       #push items onto new intersection path
-#                     }
-                    
-#                 end
-
-#                 inter[s_ind].push(k)                                        #push interchange to array
-#                 inter_save = inter[s_ind][0...-1];                          #save the interchanges except for last
-                
-#                 print "Visited #{@visited}\n"
-#                 print "Path - #{path} \n"
-#                 print "Path_Temp - #{path_temp}\n"
-#                 print "Inter - #{inter}\n"
-#                 print "inter_save - #{inter_save}\n\n"
-
-#                 # print "arr #{[@origin,inter[s_ind]].flatten}"
-                
-#                 print "trip processed - #{path[s_ind][0...-1]}, #{[@origin,inter[s_ind]].flatten}\n"
-#                 time_w = cal_times({lines: path[s_ind][0...-1], stations:[@origin,inter[s_ind]].flatten})                           
-#                 # print "time - #{inter[s_ind][-1]} #{time_w}\n"
-#                 print "TIMES #{@time_weight}\n"
-#                 s_ind += 1                                                  #increment index
-#             end
-            
-#             gets
-#         }
-#         # when finished with all intersections of line?
-#         @visited[@origin] = true;
-        
-#         @visited[inter_save] = true;
-        
-#         if(!link)                                                           #if can't find a interchange
-#             path[s_ind] = []                                                #set path to empty array
-#             s_ind += 1                                                      #increment index
-#         end
-#     }
-
-
-
-
-
-
-# path.each_index{|item_index|                                            #for each calculated path
-# # print "!!#{path[item_index]} -- #{destination_line}\n"
-# destination_line.each{ |des_item|                                   #look at lines connected to destination
-#     if(path[item_index] & (des_item) != [])                             #if path matches a line that is connected to the destination
-#         # print "path #{path[item_index]}\n"
-#         found_path = true                                               #path is found
-#         @trip_path.push({lines: path[item_index], stations:[@origin,inter[item_index],@destination].flatten})
-#     end
-# } 
-# }
-
-
-    # def travel
-    #     # print "entering travel\n"
-    #     (@trip_finish - @trip_start).times{|time|
-    #         print "-#{time + 1 + @trip_start}"
-
-    #         if(@pa[time + 1 + @trip_start] != nil)
-    #             print "\n PA - #{@pa[time + 1 + @trip_start]}"
-    #             sleep(0.5)
-    #             print " Mind the gap\n\n"
-    #             sleep(1)
-    #         end
-    #         sleep(1)
-    #     }
-    # end
-
-#     @trip_path.each_with_index{ |trip,i|
-#     # print "trip cal - #{trip}\n"
-#     cal_times(trip)
-#     print "________________ Trip #{i+1} _________________\n\n"
-#     trip[:message].each{ |m|
-#         print m
-#     }
-# }
-# print "_____________________________________________\n"
